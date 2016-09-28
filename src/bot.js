@@ -17,7 +17,7 @@ class Bot {
   }
 
   actionIsActionable(action, conversation) {
-    return action.constraints.every(consts => this.constraintsAreComplete(consts, conversation))
+    return action.dependencies.every(deps => this.dependenciesAreComplete(deps, conversation))
   }
 
   // Returns true if the action is complete (all the dependencies and constraints are complete)

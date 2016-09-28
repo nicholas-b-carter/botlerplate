@@ -123,3 +123,84 @@ test('Bot#actionIsComplete', t => {
   t.true(bot.actionIsComplete(greet, conversation))
   t.false(bot.actionIsComplete(order, conversation))
 })
+
+test('Bot#constraintIsComplete', t => {
+  const bot = new Bot()
+  const conversation = {
+    memory: {},
+    userData: {},
+    conversationData: {
+      states: {},
+    },
+  }
+  class Menu extends Action {
+    constructor() {
+      super()
+      this.constraints = [[{ entity: 'person', alias: 'name' }]]
+    }
+  }
+  bot.registerActions([Greetings, Menu])
+  const menu = bot.findActionByName('Menu')
+  t.false(bot.constraintIsComplete(menu.constraints[0][0], conversation))
+  conversation.memory.name = {
+    raw: 'Jean Valjean',
+    value: 'Jean Valjean',
+  }
+  t.true(bot.constraintIsComplete(menu.constraints[0][0], conversation))
+})
+
+test('Bot#constraintsAreComplete', t => {
+  const bot = new Bot()
+  const conversation = {
+    memory: {},
+    userData: {},
+    conversationData: {
+      states: {},
+    },
+  }
+  class Menu extends Action {
+    constructor() {
+      super()
+      this.constraints = [[
+        { entity: 'person', alias: 'name' },
+        { entity: 'color', alias: 'color' },
+      ]]
+    }
+  }
+  bot.registerActions(Menu)
+  const menu = bot.findActionByName('Menu')
+  t.false(bot.constraintsAreComplete(menu.constraints[0], conversation))
+  conversation.memory.name = {
+    raw: 'Jean Valjean',
+    value: 'Jean Valjean',
+  }
+  t.true(bot.constraintsAreComplete(menu.constraints[0], conversation))
+})
+
+test('Bot#actionIsActionable', t => {
+  const bot = new Bot()
+  const conversation = {
+    memory: {},
+    userData: {},
+    conversationData: {
+      states: {},
+    },
+  }
+  class Menu extends Action {
+    constructor() {
+      super()
+      this.constraints = [[
+        { entity: 'person', alias: 'name' },
+        { entity: 'color', alias: 'color' },
+      ]]
+      this.dependencies = [[
+        { action: 'Greetings' },
+      ]]
+    }
+  }
+  bot.registerActions([Greetings, Menu])
+  const menu = bot.findActionByName('Menu')
+  t.false(bot.actionIsActionable(menu, conversation))
+  conversation.conversationData.states.Greetings = true
+  t.true(bot.actionIsActionable(menu, conversation))
+})
