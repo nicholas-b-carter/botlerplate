@@ -1,0 +1,52 @@
+{
+  "name": "botlerplate",
+  "version": "1.0.0",
+  "description": "Bot framework by Recast.AI",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "babel-node src/server.js",
+    "start-dev": "nodemon src/server.js --exec babel-node",
+    "build": "babel src -d lib",
+    "lint": "eslint src",
+    "test:watch": "ava test --watch",
+    "test": "ava test",
+	"test:cover": "nyc ava test"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ]
+  },
+  "keywords": [
+    "chatbots",
+    "bots",
+    "ai",
+    "nlp",
+    "recast",
+    "Recast.AI"
+  ],
+  "author": "Francois Triquet",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^0.16.0",
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.14.0",
+    "eslint": "^3.6.0",
+    "eslint-config-airbnb-base": "^8.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "nodemon": "^1.10.2"
+  },
+  "dependencies": {
+    "lodash": "^4.16.2",
+    "mongoose": "^4.6.1",
+    "nyc": "^8.3.0"
+  }
+}
