@@ -4,11 +4,16 @@ import Bot from '../src/bot'
 import Action from '../src/action'
 
 class Greetings extends Action {
+  constructor() {
+    super()
+    this.intent = 'greetings'
+  }
 }
 class Order extends Action {
   constructor() {
     super()
-    this.dependencies = [[{ action: 'Greetings' }]]
+    this.intent = 'order'
+    this.dependencies = [{ actions: ['Greetings'], isMissing: { en: [] } }]
   }
 }
 
