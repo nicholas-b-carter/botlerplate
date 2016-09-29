@@ -2,11 +2,23 @@ class Action {
   constructor() {
     this.constraints = []
     this.dependencies = []
-    this.defaultValidator = () => Promise.resolve()
+    this.defaultValidator = (entity) => entity
   }
 
   name() {
     return this.constructor.name
+  }
+
+  validate() {
+    return this.constraints.every(constraint =>
+                                  Array.isArray(constraint) &&
+                                  constraint.every(knowledge =>
+                                                   typeof knowledge.alias === 'string'
+                                                   && typeof knowledge.entity === 'string'))
+           && this.dependencies.every(dependency =>
+                                      Array.isArray(dependency) &&
+                                      dependency.every(prereq =>
+                                                       typeof prereq.action === 'string'))
   }
 
   dependenciesAreComplete(actions, conversation) {

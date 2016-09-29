@@ -1,4 +1,5 @@
 import test from 'ava'
+import _ from 'lodash'
 import Bot from '../src/bot'
 import Action from '../src/action'
 
@@ -10,6 +11,35 @@ class Order extends Action {
     this.dependencies = [[{ action: 'Greetings' }]]
   }
 }
+
+test('Bot#registerAction', t => {
+  class Invalid extends Action {
+    constructor() {
+      super()
+      this.constraints = [{ entity: 'datetime', alias: 'departure' }]
+    }
+  }
+
+  const bot = new Bot()
+  let error = null
+  try {
+    bot.registerActions(Invalid)
+  } catch (e) {
+    error = e
+  }
+  t.true(error !== null)
+  t.true(error.message === 'Invalid action: Invalid')
+  t.is(_.keys(bot.actions).length, 0)
+
+  error = null
+  try {
+    bot.registerActions(Greetings)
+  } catch (e) {
+    error = e
+  }
+  t.is(error, null)
+  t.is(_.keys(bot.actions).length, 1)
+})
 
 test('Bot#findActionByName', t => {
   const bot = new Bot()
