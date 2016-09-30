@@ -33,7 +33,7 @@ class Bot {
   // Updates memory with input's entities
   // Priority: 1) constraint of the current action
   //           2) any constraint that is alone in the bot
-  // TODO: user validators
+  // TODO: use validators
   updateMemory(conversation, entities, action) {
     const actionKnowledges = action.constraints.reduce((a, b) => a.concat(b))
 

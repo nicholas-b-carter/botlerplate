@@ -35,21 +35,22 @@ class Action {
                                                            typeof e.alias === 'string'))) {
       return false
     }
+    if (this.dependencies.length > 0 &&
+        this.dependencies.some(dependency =>
+                               dependency.actions.some(a => a === this.name()))) {
+      return false
+    }
 
     return true
   }
 
   dependenciesAreComplete(actions, conversation) {
     return this.dependencies.every(dependency => dependency.actions.some(a => {
-      if (a === this.name()) {
-        throw new Error(`Action ${a} requires itself`)
-      }
-
       const requiredAction = actions[a]
       if (!requiredAction) {
         throw new Error(`Action ${a} not found`)
       }
-      return requiredAction.isDone(actions, conversation)
+      return requiredAction.isDone(conversation)
     }))
   }
 
@@ -70,16 +71,13 @@ class Action {
     return conversation.conversationData.states[this.name()] === true
   }
 
-  getMissingEntity(memory) {
-    const incompletes = this.constraints.find(c => c.entities.some(e => memory[e.alias]) === false)
-    const randomConstraint = this.getRandom(incompletes)
-    return randomConstraint.isMissing
+  getMissingEntities(memory) {
+    return this.constraints.find(c => c.entities.some(e => memory[e.alias]) === false)
   }
 
-  getMissingDependency(actions, conversation) {
-    const incompletes = this.dependencies.find(d => d.actions.map(a => actions[a])
-                                                             .every(a => !a.isDone(conversation)))
-    return incompletes.isMissing
+  getMissingDependencies(actions, conversation) {
+    return this.dependencies.find(d => d.actions.map(a => actions[a])
+                                                .every(a => !a.isDone(conversation)))
   }
 
   process(conversation, actions, recastResponse) {
