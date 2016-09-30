@@ -64,7 +64,7 @@ class Bot {
               Promise.resolve(validator(ent, conversation.memory)).then(res => {
                 resolv({ name: n, value: res || ent })
               })
-            }))(name, entity))
+            }))(actionKnowledge.alias, entity))
           } else {
             const gblKnowledges = this.actions.map(a => a.constraints)
                                               .reduce((a, b) => a.concat(b))
@@ -77,7 +77,7 @@ class Bot {
                 Promise.resolve(validator(ent, conversation.memory)).then(res => {
                   resolv({ name: n, value: res || ent })
                 })
-              }))(name, entity))
+              }))(gblKnowledges[0].alias, entity))
             }
           }
         })

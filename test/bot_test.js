@@ -1,6 +1,6 @@
 import test from 'ava'
 import _ from 'lodash'
-import sinon from 'sinon';
+import sinon from 'sinon'
 import mongoose from 'mongoose'
 
 import Bot from '../src/bot'
@@ -92,7 +92,7 @@ test('Bot#markActionAsDone', t => {
   t.true(conversation.conversationData.states.Order)
 })
 
-test('Bot#updateMemory', t => {
+test('Bot#updateMemory', async t => {
   const conversation = {
     memory: {},
     conversationData: { states: {} },
@@ -129,7 +129,7 @@ test('Bot#updateMemory', t => {
     }
   }
 
-  class Order extends Action {
+  class Orderr extends Action {
     constructor() {
       super()
       this.intent = 'order'
@@ -142,7 +142,7 @@ test('Bot#updateMemory', t => {
         entities: [{ entity: 'number', alias: 'product' }],
       }, {
         isMissing: { en: ['Wehre do you want to be delivered?'] },
-        entities: [{ entity: 'datetime', alias: 'delivery-date' }],
+        entities: [{ entity: 'datetime', alias: 'date' }],
       }]
     }
   }
@@ -162,8 +162,8 @@ test('Bot#updateMemory', t => {
   }
 
   const bot = new Bot()
-  bot.registerActions([Greeting, Order, Delivery, Goodbyes])
-  const mainAction = bot.actions.Order
+  bot.registerActions([Greeting, Orderr, Delivery, Goodbyes])
+  const mainAction = bot.actions.Orderr
   const entities = {
     datetime: [{
       raw: 'tomorrow at 9pm',
@@ -174,7 +174,6 @@ test('Bot#updateMemory', t => {
       confidence: 0.99,
     }],
   }
-  bot.updateMemory(mainAction, entities, conversation).then(res => {
-    console.log(conversation)
-  })
+  await bot.updateMemory(mainAction, entities, conversation)
+  t.true(typeof conversation.memory.date === 'object')
 })
