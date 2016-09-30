@@ -180,7 +180,7 @@ test('Bot#updateMemory', async t => {
   t.true(typeof conversation.memory.date === 'object')
 
 
-  // It should not update if there is several knwoeledges
+  // It should not update if there is several knowledges
   mainAction = bot.actions.Greeting
   entities = {
     datetime: [{
@@ -196,5 +196,28 @@ test('Bot#updateMemory', async t => {
 
   await bot.updateMemory(mainAction, entities, conversation)
   t.true(typeof conversation.memory.date === 'undefined')
+  t.true(typeof conversation.memory['delivery-date'] === 'undefined')
+
+  // It should update several knowledges
+  mainAction = bot.actions.Orderr
+  entities = {
+    person: [{
+      raw: 'Jean Valjean',
+      value: 'Jean Valjean',
+    }],
+    datetime: [{
+      raw: 'tomorrow at 9pm',
+      formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
+      accuracy: 'day,hour',
+      chronology: 'future',
+      time: '2016-10-01T21:00:00',
+      confidence: 0.99,
+    }],
+  }
+  conversation.memory = {}
+
+  await bot.updateMemory(mainAction, entities, conversation)
+  t.true(typeof conversation.memory.date === 'object')
+  t.true(typeof conversation.memory.name === 'object')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 })

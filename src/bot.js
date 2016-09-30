@@ -68,6 +68,8 @@ class Bot {
           } else {
             const gblKnowledges = _.values(this.actions).map(a => a.constraints)
                                               .reduce((a, b) => a.concat(b))
+                                              .map(c => c.entities)
+                                              .reduce((a, b) => a.concat(b))
                                               .filter(k => k.entity === name)
 
             if (gblKnowledges.length === 1) {
