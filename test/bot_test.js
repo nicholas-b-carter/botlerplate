@@ -91,3 +91,90 @@ test('Bot#markActionAsDone', t => {
   bot.markActionAsDone(order, conversation)
   t.true(conversation.conversationData.states.Order)
 })
+
+test('Bot#updateMemory', t => {
+  const conversation = {
+    memory: {},
+    conversationData: { states: {} },
+    userData: {},
+  }
+
+  class Greeting extends Action {
+    constructor() {
+      super()
+      this.intent = 'greetings'
+      this.constraints = [
+        {
+          isMissing: { en: ['How should I call you?'] },
+          entities: [{ entity: 'person', alias: 'name' }],
+        },
+      ]
+    }
+  }
+
+  class Delivery extends Action {
+    constructor() {
+      super()
+      this.intent = 'delivery'
+      this.constraints = [
+        {
+          isMissing: { en: ['Wehre do you want to be delivered?'] },
+          entities: [{ entity: 'datetime', alias: 'delivery-date' }],
+        },
+      ]
+      this.dependencies = [{
+        isMissing: {},
+        actions: ['Greeting'],
+      }]
+    }
+  }
+
+  class Order extends Action {
+    constructor() {
+      super()
+      this.intent = 'order'
+      this.dependencies = [{
+        isMissing: {},
+        actions: ['Greetings'],
+      }]
+      this.constraints = [{
+        isMissing: { en: ['What product would you like?'] },
+        entities: [{ entity: 'number', alias: 'product' }],
+      }, {
+        isMissing: { en: ['Wehre do you want to be delivered?'] },
+        entities: [{ entity: 'datetime', alias: 'delivery-date' }],
+      }]
+    }
+  }
+
+  class Goodbyes extends Action {
+    constructor() {
+      super()
+      this.intent = 'goodbye'
+      this.dependencies = [{
+        isMissing: { en: ['I need to know what you want before...'] },
+        actions: ['Order'],
+      }, {
+        isMissing: { en: ['Sorry but I need more informations'] },
+        actions: ['Delivery'],
+      }]
+    }
+  }
+
+  const bot = new Bot()
+  bot.registerActions([Greeting, Order, Delivery, Goodbyes])
+  const mainAction = bot.actions.Order
+  const entities = {
+    datetime: [{
+      raw: 'tomorrow at 9pm',
+      formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
+      accuracy: 'day,hour',
+      chronology: 'future',
+      time: '2016-10-01T21:00:00',
+      confidence: 0.99,
+    }],
+  }
+  bot.updateMemory(mainAction, entities, conversation).then(res => {
+    console.log(conversation)
+  })
+})

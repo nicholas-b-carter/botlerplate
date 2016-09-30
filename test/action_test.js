@@ -21,7 +21,7 @@ class Delivery extends Action {
     this.intent = 'delivery'
     this.constraints = [
       {
-        isMissing: { en: ['Wehre do you want to be delivered?'] },
+        isMissing: { en: ['Where do you want to be delivered?'] },
         entities: [{ entity: 'datetime', alias: 'delivery-date' }],
       },
     ]
