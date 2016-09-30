@@ -163,8 +163,10 @@ test('Bot#updateMemory', async t => {
 
   const bot = new Bot()
   bot.registerActions([Greeting, Orderr, Delivery, Goodbyes])
-  const mainAction = bot.actions.Orderr
-  const entities = {
+
+  // It should update the knowledge of the main action
+  let mainAction = bot.actions.Orderr
+  let entities = {
     datetime: [{
       raw: 'tomorrow at 9pm',
       formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
@@ -176,4 +178,23 @@ test('Bot#updateMemory', async t => {
   }
   await bot.updateMemory(mainAction, entities, conversation)
   t.true(typeof conversation.memory.date === 'object')
+
+
+  // It should not update if there is several knwoeledges
+  mainAction = bot.actions.Greeting
+  entities = {
+    datetime: [{
+      raw: 'tomorrow at 9pm',
+      formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
+      accuracy: 'day,hour',
+      chronology: 'future',
+      time: '2016-10-01T21:00:00',
+      confidence: 0.99,
+    }],
+  }
+  conversation.memory = {}
+
+  await bot.updateMemory(mainAction, entities, conversation)
+  t.true(typeof conversation.memory.date === 'undefined')
+  t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 })

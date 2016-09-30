@@ -66,7 +66,7 @@ class Bot {
               })
             }))(actionKnowledge.alias, entity))
           } else {
-            const gblKnowledges = this.actions.map(a => a.constraints)
+            const gblKnowledges = _.values(this.actions).map(a => a.constraints)
                                               .reduce((a, b) => a.concat(b))
                                               .filter(k => k.entity === name)
 
