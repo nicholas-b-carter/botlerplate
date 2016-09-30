@@ -1,5 +1,8 @@
 import test from 'ava'
 import _ from 'lodash'
+import sinon from 'sinon';
+import mongoose from 'mongoose'
+
 import Bot from '../src/bot'
 import Action from '../src/action'
 
@@ -16,6 +19,18 @@ class Order extends Action {
     this.dependencies = [{ actions: ['Greetings'], isMissing: { en: [] } }]
   }
 }
+
+test('Bot#useDatabase', t => {
+  const mock = sinon.mock(mongoose)
+  const bot = new Bot()
+  mock.expects('connect').once().throws()
+  try {
+    bot.useDatabase({})
+  } catch (e) {
+    t.true(e !== undefined && e !== null)
+  }
+  mock.verify()
+})
 
 test('Bot#registerAction', t => {
   class Invalid extends Action {

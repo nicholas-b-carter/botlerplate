@@ -4,13 +4,11 @@
   "description": "Bot framework by Recast.AI",
   "main": "src/index.js",
   "scripts": {
-    "start": "babel-node src/server.js",
-    "start-dev": "nodemon src/server.js --exec babel-node",
     "build": "babel src -d build",
     "lint": "eslint src",
     "test:watch": "ava test --watch",
     "test": "ava test",
-	"test:cover": "nyc ava test"
+    "test:cover": "nyc ava test"
   },
   "babel": {
     "presets": [
@@ -42,7 +40,8 @@
     "eslint": "^3.6.0",
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",
-    "nodemon": "^1.10.2"
+    "nodemon": "^1.10.2",
+    "sinon": "^1.17.6"
   },
   "dependencies": {
     "lodash": "^4.16.2",

@@ -1,8 +1,21 @@
 import _ from 'lodash'
+import mongoose from 'mongoose'
 
 class Bot {
   constructor() {
     this.actions = {}
+  }
+
+  useDatabase(conf) {
+    let db = 'mongodb://'
+    if (conf.username) {
+      db = `${db}${conf.username}:${conf.password}@`
+    }
+    db = `${db}${conf.hostname}:${conf.port}/${conf.name}?ssl=${conf.ssl}`
+
+    mongoose.connect(db, (err) => {
+      if (err) { throw err }
+    })
   }
 
   registerActions(Actions) {
