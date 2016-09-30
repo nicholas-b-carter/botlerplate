@@ -71,7 +71,7 @@ test('Bot#findActionByName', t => {
   t.is(bot.findActionByName('Other'), undefined)
 })
 
-test('Bot#markActionAsDone', t => {
+test('Bot#updateMemory', t => {
   const conversation = {
     memory: {},
     conversationData: { states: {} },
@@ -178,6 +178,7 @@ test('Bot#updateMemory', async t => {
   }
   await bot.updateMemory(mainAction, entities, conversation)
   t.true(typeof conversation.memory.date === 'object')
+  t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 
 
   // It should not update if there is several knowledges
@@ -196,6 +197,7 @@ test('Bot#updateMemory', async t => {
 
   await bot.updateMemory(mainAction, entities, conversation)
   t.true(typeof conversation.memory.date === 'undefined')
+  t.true(typeof conversation.memory.product === 'undefined')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 
   // It should update several knowledges
@@ -219,5 +221,54 @@ test('Bot#updateMemory', async t => {
   await bot.updateMemory(mainAction, entities, conversation)
   t.true(typeof conversation.memory.date === 'object')
   t.true(typeof conversation.memory.name === 'object')
+  t.true(typeof conversation.memory.product === 'undefined')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
+
+  // It should do nothing when no entities
+  mainAction = bot.actions.Orderr
+  entities = {}
+  conversation.memory = {}
+
+  await bot.updateMemory(mainAction, entities, conversation)
+  t.true(typeof conversation.memory.date === 'undefined')
+  t.true(typeof conversation.memory.name === 'undefined')
+  t.true(typeof conversation.memory.product === 'undefined')
+  t.true(typeof conversation.memory['delivery-date'] === 'undefined')
+
+
+  // It should update even when error
+  class Bad extends Action {
+    constructor() {
+      super()
+      this.intent = 'bad'
+      this.constraints = [
+        {
+          isMissing: {},
+          entities: [{ entity: 'color',
+            alias: 'color',
+            validator: () => new Promise((resolve, reject) => reject({ en: ['I don\'t care!'] })),
+          }],
+        },
+      ]
+    }
+  }
+  bot.registerActions(Bad)
+  mainAction = bot.actions.Orderr
+  entities = {
+    color: [{ raw: 'red', hex: '#FF0000', rgb: 'rgb(255,0,0)' }],
+    person: [{ raw: 'Jean Valjean', value: 'Jean Valjean' }],
+  }
+  conversation.memory = {}
+
+  bot.updateMemory(mainAction, entities, conversation).then(() => {
+    t.true(false) // this promise MUST reject
+  }).catch(err => {
+    t.true(_.isEqual(err, { en: ['I don\'t care!'] }))
+    t.true(typeof conversation.memory.date === 'undefined')
+    t.true(typeof conversation.memory.color === 'undefined')
+    // name should have been updated
+    t.true(typeof conversation.memory.name === 'object')
+    t.true(typeof conversation.memory.product === 'undefined')
+    t.true(typeof conversation.memory['delivery-date'] === 'undefined')
+  })
 })

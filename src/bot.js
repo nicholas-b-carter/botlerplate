@@ -60,9 +60,11 @@ class Bot {
           if (actionKnowledge) {
             const validator = actionKnowledge.validator || (e => e)
 
-            promises.push(((n, ent) => new Promise(resolv => {
+            promises.push(((n, ent) => new Promise((resolv, rejec) => {
               Promise.resolve(validator(ent, conversation.memory)).then(res => {
                 resolv({ name: n, value: res || ent })
+              }).catch(err => {
+                rejec(err)
               })
             }))(actionKnowledge.alias, entity))
           } else {
@@ -75,9 +77,11 @@ class Bot {
             if (gblKnowledges.length === 1) {
               const validator = gblKnowledges[0].validator || (e => e)
 
-              promises.push(((n, ent) => new Promise(resolv => {
+              promises.push(((n, ent) => new Promise((resolv, rejec) => {
                 Promise.resolve(validator(ent, conversation.memory)).then(res => {
                   resolv({ name: n, value: res || ent })
+                }).catch(err => {
+                  rejec(err)
                 })
               }))(gblKnowledges[0].alias, entity))
             }
@@ -91,7 +95,7 @@ class Bot {
 
       const e = []
       Promise.all(promises.map(p => p.catch(err => { e.push(err) }))).then(res => {
-        res.forEach(entity => {
+        res.filter(el => el !== undefined).forEach(entity => {
           const { name, value } = entity
           conversation.memory[name] = value
         })
