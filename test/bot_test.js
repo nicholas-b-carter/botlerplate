@@ -12,6 +12,7 @@ class Greetings extends Action {
     this.intent = 'greetings'
   }
 }
+
 class Order extends Action {
   constructor() {
     super()
@@ -71,7 +72,7 @@ test('Bot#findActionByName', t => {
   t.is(bot.findActionByName('Other'), undefined)
 })
 
-test('Bot#updateMemory', t => {
+test('Bot#markActionAsDone', t => {
   const conversation = {
     memory: {},
     conversationData: { states: {} },
@@ -244,7 +245,8 @@ test('Bot#updateMemory', async t => {
       this.constraints = [
         {
           isMissing: {},
-          entities: [{ entity: 'color',
+          entities: [{
+            entity: 'color',
             alias: 'color',
             validator: () => new Promise((resolve, reject) => reject({ en: ['I don\'t care!'] })),
           }],

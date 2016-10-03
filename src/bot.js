@@ -69,10 +69,10 @@ class Bot {
             }))(actionKnowledge.alias, entity))
           } else {
             const gblKnowledges = _.values(this.actions).map(a => a.constraints)
-                                              .reduce((a, b) => a.concat(b))
-                                              .map(c => c.entities)
-                                              .reduce((a, b) => a.concat(b))
-                                              .filter(k => k.entity === name)
+                                               .reduce((a, b) => a.concat(b))
+                                               .map(c => c.entities)
+                                               .reduce((a, b) => a.concat(b))
+                                               .filter(k => k.entity === name)
 
             if (gblKnowledges.length === 1) {
               const validator = gblKnowledges[0].validator || (e => e)
@@ -101,7 +101,7 @@ class Bot {
         })
 
         if (e.length > 0) {
-          return reject(e[0])
+          return reject(e[e.length - 1])
         }
 
         return resolve()

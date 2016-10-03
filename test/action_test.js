@@ -312,3 +312,105 @@ test('Action#isActionable', t => {
   t.true(delivery.dependenciesAreComplete(bot.actions, conversation))
   t.true(goodbyes.dependenciesAreComplete(bot.actions, conversation))
 })
+
+test('Updators should be able to return a value', async t => {
+  class Command extends Action {
+    constructor() {
+      super()
+      this.intent = 'command'
+      this.constraints = [
+        {
+          entities: [{
+            entity: 'location',
+            alias: 'place',
+            validator: entity => entity.raw,
+          }],
+          isMissing: { en: [], fr: [] },
+        },
+      ]
+    }
+  }
+
+  const conversation = {
+    memory: {},
+    conversationData: { states: {} },
+    userData: {},
+  }
+  const entities = {
+    location: [{
+      formatted: '115, Rue Cardinet, Paris, Paris, Île-de-France, France, 75017',
+      lat: 48.8858619,
+      lng: 2.3115001,
+      raw: '115 rue Cardinet',
+    }],
+  }
+
+  const b = new Bot()
+  b.registerActions([Command])
+  const mainAction = b.actions.Command
+
+  await b.updateMemory(mainAction, entities, conversation).then(() => {
+    t.truthy(conversation.memory.place)
+    t.is(conversation.memory.place, '115 rue Cardinet')
+  }).catch(() => { t.fail() })
+})
+
+test('Updators should be able to reject or resolve', async t => {
+  class Command extends Action {
+    constructor() {
+      super()
+      this.intent = 'command'
+      this.constraints = [
+        {
+          entities: [{
+            entity: 'location',
+            alias: 'place',
+            validator: (entity, memory) => new Promise((resolve, reject) => {
+              if (memory.place) {
+                return reject({ en: ['I already know'] })
+              }
+              return resolve(entity)
+            }),
+          }],
+          isMissing: { en: [], fr: [] },
+        },
+      ]
+    }
+  }
+
+  const conversation = {
+    memory: {},
+    conversationData: { states: {} },
+    userData: {},
+  }
+  let entities = {
+    location: [{
+      formatted: '115, Rue Cardinet, Paris, Paris, Île-de-France, France, 75017',
+      lat: 48.8858619,
+      lng: 2.3115001,
+      raw: '115 rue Cardinet',
+    }],
+  }
+
+  const b = new Bot()
+  b.registerActions([Command])
+  const mainAction = b.actions.Command
+
+  await b.updateMemory(mainAction, entities, conversation).then(() => {
+    t.truthy(conversation.memory.place)
+  }).catch(t.fail)
+
+  entities = {
+    location: [{
+      formatted: '116, Rue Cardinet, Paris, Paris, Île-de-France, France, 75017',
+      lat: 48.8858619,
+      lng: 2.3115001,
+      raw: '116 rue Cardinet',
+    }],
+  }
+
+  await b.updateMemory(mainAction, entities, conversation).then(t.fail).catch(err => {
+    t.is(conversation.memory.place.raw, '115 rue Cardinet')
+    t.deepEqual(err, { en: ['I already know'] })
+  })
+})
