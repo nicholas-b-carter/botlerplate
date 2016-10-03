@@ -37,10 +37,30 @@ class Bot {
   // Marks an action as done
   markActionAsDone(action, conversation) {
     if (typeof action === 'string') {
-      conversation.conversationData.states[action] = true
+      conversation.actionStates[action] = true
     } else {
-      conversation.conversationData.states[action.name()] = true
+      conversation.actionStates[action.name()] = true
     }
+  }
+
+  // initialize should resolve the conversation linked to the conversationId
+  // The conversation should be found or created in db, or directly instanciated
+  initialize(conversationId) {
+    return new Promise((resolve, reject) => {
+      // TODO
+    })
+  }
+
+  // expandVariables takes a string and returns
+  // the reply with variables replaced by their respective values
+  expandVariables(reply, memory) {
+    // TODO
+  }
+
+  reply(input, conversationId) {
+    return new Promise((resolve, reject) => {
+      // TODO
+    })
   }
 
   // Updates memory with input's entities
@@ -107,6 +127,17 @@ class Bot {
         return resolve()
       })
       return true
+    })
+  }
+
+  saveConversation(conversation, cb) {
+    conversation.markModified('userData')
+    conversation.markModified('states')
+    conversation.markModified('memory')
+    conversation.save(err => {
+      if (cb) {
+        cb(err)
+      }
     })
   }
 }

@@ -68,7 +68,7 @@ class Action {
   }
 
   isDone(conversation) {
-    return conversation.conversationData.states[this.name()] === true
+    return conversation.actionStates[this.name()] === true
   }
 
   getMissingEntities(memory) {

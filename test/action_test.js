@@ -139,7 +139,7 @@ test('Action#constraintsAreComplete', t => {
   const { Greetings: greet, Order: order } = bot.actions
   const conversation = {
     userData: {},
-    conversationData: { states: {} },
+    actionStates: {},
     memory: {},
   }
   t.false(greet.constraintsAreComplete(conversation.memory))
@@ -162,7 +162,7 @@ test('Action#dependenciesAreComplete', t => {
     Goodbyes: goodbyes } = bot.actions
   const conversation = {
     userData: {},
-    conversationData: { states: {} },
+    actionStates: {},
     memory: {},
   }
   t.true(greet.dependenciesAreComplete(bot.actions, conversation))
@@ -201,7 +201,7 @@ test('Action#isComplete', t => {
   } = bot.actions
   const conversation = {
     userData: {},
-    conversationData: { states: {} },
+    actionStates: {},
     memory: {},
   }
   t.false(greet.isComplete(bot.actions, conversation))
@@ -260,7 +260,7 @@ test('Action#isDone', t => {
     Goodbyes: goodbyes } = bot.actions
   const conversation = {
     userData: {},
-    conversationData: { states: {} },
+    actionStates: {},
     memory: {},
   }
   t.false(greet.isDone(conversation))
@@ -283,7 +283,7 @@ test('Action#isActionable', t => {
     Goodbyes: goodbyes } = bot.actions
   const conversation = {
     userData: {},
-    conversationData: { states: {} },
+    actionStates: {},
     memory: {},
   }
   t.true(greet.dependenciesAreComplete(bot.actions, conversation))
@@ -333,7 +333,7 @@ test('Updators should be able to return a value', async t => {
 
   const conversation = {
     memory: {},
-    conversationData: { states: {} },
+    actionStates: {},
     userData: {},
   }
   const entities = {
@@ -380,7 +380,7 @@ test('Updators should be able to reject or resolve', async t => {
 
   const conversation = {
     memory: {},
-    conversationData: { states: {} },
+    actionStates: {},
     userData: {},
   }
   let entities = {

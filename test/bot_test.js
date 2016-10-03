@@ -75,7 +75,7 @@ test('Bot#findActionByName', t => {
 test('Bot#markActionAsDone', t => {
   const conversation = {
     memory: {},
-    conversationData: { states: {} },
+    actionStates: {},
     userData: {},
   }
   const bot = new Bot()
@@ -83,20 +83,20 @@ test('Bot#markActionAsDone', t => {
   const order = bot.findActionByName('Order')
 
   // With name
-  t.false(conversation.conversationData.states.Greetings === true)
+  t.false(conversation.actionStates.Greetings === true)
   bot.markActionAsDone('Greetings', conversation)
-  t.true(conversation.conversationData.states.Greetings)
+  t.true(conversation.actionStates.Greetings)
 
   // With instance
-  t.false(conversation.conversationData.states.Order === true)
+  t.false(conversation.actionStates.Order === true)
   bot.markActionAsDone(order, conversation)
-  t.true(conversation.conversationData.states.Order)
+  t.true(conversation.actionStates.Order)
 })
 
 test('Bot#updateMemory', async t => {
   const conversation = {
     memory: {},
-    conversationData: { states: {} },
+    actionStates: {},
     userData: {},
   }
 

@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const conversationSchema = new mongoose.Schema({
   conversationId: String,
   memory: Object,
-  conversationData: Object,
+  actionStates: Object,
   userData: Object,
 })
 
