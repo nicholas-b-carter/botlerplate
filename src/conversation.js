@@ -7,6 +7,6 @@ const conversationSchema = new mongoose.Schema({
   userData: Object,
 })
 
-const Conversation = mongoose.mode('Conversation', conversationSchema)
+const Conversation = mongoose.model('Conversation', conversationSchema)
 
 module.exports = Conversation

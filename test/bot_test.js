@@ -1,10 +1,12 @@
 import test from 'ava'
 import _ from 'lodash'
 import sinon from 'sinon'
-import mongoose from 'mongoose'
+import 'sinon-as-promised'
+import 'sinon-mongoose'
 
 import Bot from '../src/bot'
 import Action from '../src/action'
+import Conversation from '../src/conversation'
 
 class Greetings extends Action {
   constructor() {
@@ -21,16 +23,21 @@ class Order extends Action {
   }
 }
 
-test('Bot#useDatabase', t => {
-  const mock = sinon.mock(mongoose)
-  const bot = new Bot()
-  mock.expects('connect').once().throws()
-  try {
-    bot.useDatabase({})
-  } catch (e) {
-    t.true(e !== undefined && e !== null)
-  }
-  mock.verify()
+test('Bot#initialize', async t => {
+  sinon.mock(Conversation)
+       .expects('findOne')
+       .withArgs({ conversationId: 'abcd' })
+       .resolves(new Conversation({
+         conversationId: 'abcd',
+         userData: {},
+         actionStates: {},
+         memory: {},
+       }))
+  const b = new Bot()
+  b.useDb = true
+  b.initialize('abcd').then(res => {
+    t.truthy(res)
+  }).catch(t.fail)
 })
 
 test('Bot#registerAction', t => {

@@ -1,17 +1,25 @@
 import _ from 'lodash'
 import mongoose from 'mongoose'
 
+import Conversation from './conversation'
+
+mongoose.Promise = global.Promise
+
 class Bot {
   constructor() {
     this.actions = {}
   }
 
   useDatabase(conf) {
+    this.useDb = true
     let db = 'mongodb://'
     if (conf.username) {
       db = `${db}${conf.username}:${conf.password}@`
     }
-    db = `${db}${conf.hostname}:${conf.port}/${conf.name}?ssl=${conf.ssl}`
+    db = `${db}${conf.hostname}:${conf.port}/${conf.name}`
+    if (conf.ssl !== undefined) {
+      db = `{db}?ssl=${conf.ssl}`
+    }
 
     mongoose.connect(db, (err) => {
       if (err) { throw err }
@@ -47,7 +55,27 @@ class Bot {
   // The conversation should be found or created in db, or directly instanciated
   initialize(conversationId) {
     return new Promise((resolve, reject) => {
-      // TODO
+      if (!this.useDb) {
+        return resolve(new Conversation({
+          conversationId,
+          userData: {},
+          memory: {},
+          actionStates: {},
+        }))
+      }
+      Conversation.findOne({ conversationId }).then(res => {
+        if (res) {
+          return resolve(res)
+        }
+        Conversation.create({
+          conversationId,
+          userData: {},
+          memory: {},
+          actionStates: {},
+        }).then(resolve).catch(reject)
+        return true
+      }).catch(err => reject(err))
+      return true
     })
   }
 
@@ -91,11 +119,12 @@ class Bot {
               })
             }))(actionKnowledge.alias, entity))
           } else {
-            const gblKnowledges = _.values(this.actions).map(a => a.constraints)
-                                               .reduce((a, b) => a.concat(b))
-                                               .map(c => c.entities)
-                                               .reduce((a, b) => a.concat(b))
-                                               .filter(k => k.entity === name)
+            const gblKnowledges = _.values(this.actions)
+                                   .map(a => a.constraints)
+                                   .reduce((a, b) => a.concat(b))
+                                   .map(c => c.entities)
+                                   .reduce((a, b) => a.concat(b))
+                                   .filter(k => k.entity === name)
 
             if (gblKnowledges.length === 1) {
               const validator = gblKnowledges[0].validator || (e => e)
