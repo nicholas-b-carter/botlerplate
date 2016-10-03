@@ -349,7 +349,7 @@ test('Updators should be able to return a value', async t => {
   b.registerActions([Command])
   const mainAction = b.actions.Command
 
-  await b.updateMemory(mainAction, entities, conversation).then(() => {
+  await b.updateMemory(entities, conversation, mainAction).then(() => {
     t.truthy(conversation.memory.place)
     t.is(conversation.memory.place, '115 rue Cardinet')
   }).catch(() => { t.fail() })
@@ -396,7 +396,7 @@ test('Updators should be able to reject or resolve', async t => {
   b.registerActions([Command])
   const mainAction = b.actions.Command
 
-  await b.updateMemory(mainAction, entities, conversation).then(() => {
+  await b.updateMemory(entities, conversation, mainAction).then(() => {
     t.truthy(conversation.memory.place)
   }).catch(t.fail)
 
@@ -409,7 +409,7 @@ test('Updators should be able to reject or resolve', async t => {
     }],
   }
 
-  await b.updateMemory(mainAction, entities, conversation).then(t.fail).catch(err => {
+  await b.updateMemory(entities, conversation, mainAction).then(t.fail).catch(err => {
     t.is(conversation.memory.place.raw, '115 rue Cardinet')
     t.deepEqual(err, { en: ['I already know'] })
   })

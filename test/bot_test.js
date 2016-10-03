@@ -119,7 +119,7 @@ test('Bot#updateMemory', async t => {
       this.intent = 'delivery'
       this.constraints = [
         {
-          isMissing: { en: ['Wehre do you want to be delivered?'] },
+          isMissing: { en: ['Where do you want to be delivered?'] },
           entities: [{ entity: 'datetime', alias: 'delivery-date' }],
         },
       ]
@@ -142,7 +142,7 @@ test('Bot#updateMemory', async t => {
         isMissing: { en: ['What product would you like?'] },
         entities: [{ entity: 'number', alias: 'product' }],
       }, {
-        isMissing: { en: ['Wehre do you want to be delivered?'] },
+        isMissing: { en: ['Where do you want to be delivered?'] },
         entities: [{ entity: 'datetime', alias: 'date' }],
       }]
     }
@@ -177,12 +177,22 @@ test('Bot#updateMemory', async t => {
       confidence: 0.99,
     }],
   }
-  await bot.updateMemory(mainAction, entities, conversation)
+  await bot.updateMemory(entities, conversation, mainAction)
   t.true(typeof conversation.memory.date === 'object')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 
+  // It should update without action
+  entities = {
+    number: [{
+      raw: 'one',
+      value: 1,
+    }],
+  }
+  conversation.memory = {}
+  await bot.updateMemory(entities, conversation)
+  t.true(typeof conversation.memory.product === 'object')
 
-  // It should not update if there is several knowledges
+  // It should not update if there are several knowledges of the same entity
   mainAction = bot.actions.Greeting
   entities = {
     datetime: [{
@@ -196,7 +206,7 @@ test('Bot#updateMemory', async t => {
   }
   conversation.memory = {}
 
-  await bot.updateMemory(mainAction, entities, conversation)
+  await bot.updateMemory(entities, conversation, mainAction)
   t.true(typeof conversation.memory.date === 'undefined')
   t.true(typeof conversation.memory.product === 'undefined')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
@@ -219,7 +229,7 @@ test('Bot#updateMemory', async t => {
   }
   conversation.memory = {}
 
-  await bot.updateMemory(mainAction, entities, conversation)
+  await bot.updateMemory(entities, conversation, mainAction)
   t.true(typeof conversation.memory.date === 'object')
   t.true(typeof conversation.memory.name === 'object')
   t.true(typeof conversation.memory.product === 'undefined')
@@ -230,7 +240,7 @@ test('Bot#updateMemory', async t => {
   entities = {}
   conversation.memory = {}
 
-  await bot.updateMemory(mainAction, entities, conversation)
+  await bot.updateMemory(entities, conversation, mainAction)
   t.true(typeof conversation.memory.date === 'undefined')
   t.true(typeof conversation.memory.name === 'undefined')
   t.true(typeof conversation.memory.product === 'undefined')
@@ -262,7 +272,7 @@ test('Bot#updateMemory', async t => {
   }
   conversation.memory = {}
 
-  bot.updateMemory(mainAction, entities, conversation).then(() => {
+  bot.updateMemory(entities, conversation, mainAction).then(() => {
     t.true(false) // this promise MUST reject
   }).catch(err => {
     t.true(_.isEqual(err, { en: ['I don\'t care!'] }))

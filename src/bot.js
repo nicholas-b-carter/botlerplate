@@ -66,16 +66,19 @@ class Bot {
   // Updates memory with input's entities
   // Priority: 1) constraint of the current action
   //           2) any constraint that is alone in the bot
-  updateMemory(action, entities, conversation) {
-    const actionKnowledges = action.constraints.map(c => c.entities).reduce((a, b) => a.concat(b))
+  updateMemory(entities, conversation, action) {
+    let actionKnowledges = null
+    if (action) {
+      actionKnowledges = action.constraints.map(c => c.entities).reduce((a, b) => a.concat(b))
+    }
     return new Promise((resolve, reject) => {
       const promises = []
 
       // loop through the entities map
       _.toPairs(entities).forEach(([name, ents]) => {
         // search for a constraint of the current action
-        const actionKnowledge = actionKnowledges.find(k => k.entity === name)
-
+        const actionKnowledge =
+          (actionKnowledges && actionKnowledges.find(k => k.entity === name)) || null
         ents.forEach(entity => {
           if (actionKnowledge) {
             const validator = actionKnowledge.validator || (e => e)
