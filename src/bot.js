@@ -82,7 +82,14 @@ class Bot {
   // expandVariables takes a string and returns
   // the reply with variables replaced by their respective values
   expandVariables(reply, memory) {
-    // TODO
+    const replacer = (match, v, f) => {
+      if (!memory[v]) { return '' }
+      const variable = memory[v]
+      const field = f || 'raw'
+      if (!variable[field]) { return '' }
+      return variable[field]
+    }
+    return reply.replace(/{{\s*([a-zA-Z0-9\-_]+)\.?([a-zA-Z0-9\-_]+)?\s*}}/, replacer)
   }
 
   reply(input, conversationId) {

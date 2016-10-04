@@ -291,3 +291,22 @@ test('Bot#updateMemory', async t => {
     t.true(typeof conversation.memory['delivery-date'] === 'undefined')
   })
 })
+
+test('Bot#expandVariables', t => {
+  const memory = {
+    name: {
+      raw: 'Jean',
+      value: 'jean',
+    },
+  }
+  const b = new Bot()
+  t.is(b.expandVariables('Hello {{name}}', memory), 'Hello Jean')
+  t.is(b.expandVariables('Hello {{name.value}}', memory), 'Hello jean')
+  t.is(b.expandVariables('Hello {{  name.value }}', memory), 'Hello jean')
+  t.is(b.expandVariables('Hello { {name.value}}', memory), 'Hello { {name.value}}')
+  t.is(b.expandVariables('Hello {{foo}}', memory), 'Hello ')
+  t.is(b.expandVariables('Hello {{foo.raw}}', memory), 'Hello ')
+  t.is(b.expandVariables('Hello {{name.bar}}', memory), 'Hello ')
+  t.is(b.expandVariables('Hello {{name.}}', memory), 'Hello Jean')
+  t.is(b.expandVariables('Hello {{.value}}', memory), 'Hello {{.value}}')
+})
