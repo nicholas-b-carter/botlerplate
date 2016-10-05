@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import requireAll from 'require-all'
 
 import Bot from './bot'
+import config from '../config'
 
 const actions = requireAll(`${__dirname}/actions`)
 
@@ -26,12 +27,9 @@ const bot = new Bot({
 
 bot.registerActions(_.values(actions))
 
-bot.useDatabase({
-  hostname: 'localhost',
-  port: '27017',
-  name: 'test',
-})
-
+if (process.argv.indexOf('--db') !== -1) {
+  bot.useDatabase(config.database)
+}
 
 process.stdin.setEncoding('utf8')
 
@@ -43,14 +41,8 @@ console.log()
 process.stdout.write('> ')
 
 rl.on('SIGINT', () => {
-  rl.question('Exit? Y/n ', answer => {
-    if (answer === '' || answer.match(/^y(es)?$/i)) {
-      if (bot.useDb) {
-        mongoose.connection.close()
-        rl.close()
-      }
-    }
-  })
+  mongoose.connection.close()
+  rl.close()
 })
 
 rl.on('line', input => {
