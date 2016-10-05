@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import axios from 'axios'
 import mongoose from 'mongoose'
 
 import Conversation from './conversation'
@@ -6,8 +7,11 @@ import Conversation from './conversation'
 mongoose.Promise = global.Promise
 
 class Bot {
-  constructor() {
+  constructor(opts) {
     this.actions = {}
+    this.token = opts && opts.token
+    this.language = opts && opts.language
+    this.noIntent = opts && opts.noIntent
   }
 
   useDatabase(conf) {
@@ -95,10 +99,121 @@ class Bot {
     return reply.replace(/{{\s*([a-zA-Z0-9\-_]+)\.?([a-zA-Z0-9\-_]+)?\s*}}/, replacer)
   }
 
-  reply(input, conversationId) {
-    return new Promise((resolve, reject) => {
-      // TODO
+  evaluateReply(reply, memory) {
+    if (typeof reply === 'string') {
+      return this.expandVariables(reply, memory)
+    }
+
+    return reply
+  }
+
+  callToRecast(text, token, language) {
+    const data = { text }
+    if (language) {
+      data.language = language
+    }
+    return axios({
+      method: 'post',
+      headers: { Authorization: `Token ${token}` },
+      url: 'https://api-development.recast.ai/v2/request',
+      data,
     })
+  }
+
+  reply(input, conversationId, opts) {
+    const tok = (opts && opts.token) || this.token
+    const language = (opts && opts.language) || this.language
+    return new Promise((resolve, reject) => {
+      if (!tok) {
+        return reject('No token provided')
+      }
+
+      this.initialize(conversationId).then(conversation => {
+        if (!conversation.memory) { conversation.memory = {} }
+        if (!conversation.userData) { conversation.userData = {} }
+        if (!conversation.actionStates) { conversation.actionStates = {} }
+
+        this.callToRecast(input, tok, language).then(res => {
+          const results = res.data.results
+
+          if (results.intents.length === 0) {
+            if (this.noIntent) {
+              return resolve(this.evaluateReply(this.pickReplies([this.noIntent],
+                                                                 results.language)))
+            }
+            return reject('No response when no intent is matched')
+          }
+
+          let action = this.retrieveAction(conversation, results.intents[0].slug)
+          const replies = []
+
+          let message = null
+          let lastAction = null
+          while (!action.isActionable(this.actions, conversation)) {
+            const deps = action.getMissingDependencies(this.actions, conversation)
+
+            const dep = action.getRandom(deps)
+            message = dep.isMissing
+            if (dep.actions.length > 1) {
+              lastAction = action.name()
+              action = null
+              break
+            }
+
+            action = this.actions[dep.actions[0]]
+          }
+
+          if (action) { lastAction = action.name() }
+          conversation.lastAction = lastAction
+
+          if (message) { replies.push(message) }
+
+          this.updateMemory(results.entities, conversation, action).then(msg => {
+            if (msg) { replies.push(msg) }
+
+            if (action) {
+              action.process(conversation, this.actions, results)
+                .then(resp => {
+                  if (action.isComplete(this.actions, conversation)) {
+                    conversation.actionStates[action.name()] = true
+                  }
+                  this.saveConversation(conversation, () => {
+                    replies.push(resp)
+                    const resps = this.pickReplies(replies, language)
+                    return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+                  })
+                }).catch(reject)
+            } else {
+              this.saveConversation(conversation, () => {
+                const resps = this.pickReplies(replies, language)
+                return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+              })
+            }
+            return true
+          }).catch(reject)
+          return true
+        }).catch(reject)
+      }).catch(reject)
+
+
+      return true
+    })
+  }
+
+  pickReplies(responses, language) {
+    return responses.map(r => {
+      if (Array.isArray(r)) { return this.getRandom(r) }
+
+      const resps = r[language]
+
+      if (Array.isArray(resps)) { return this.getRandom(resps) }
+
+      return resps
+    })
+  }
+
+  getRandom(array) {
+    return array[Math.floor(Math.random() * array.length)]
   }
 
   // Updates memory with input's entities
@@ -107,9 +222,9 @@ class Bot {
   updateMemory(entities, conversation, action) {
     let actionKnowledges = null
     if (action) {
-      actionKnowledges = action.constraints.map(c => c.entities).reduce((a, b) => a.concat(b))
+      actionKnowledges = _.flatten(action.constraints.map(c => c.entities))
     }
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const promises = []
 
       // loop through the entities map
@@ -160,7 +275,7 @@ class Bot {
         })
 
         if (e.length > 0) {
-          return reject(e[e.length - 1])
+          return resolve(e[e.length - 1])
         }
 
         return resolve()
@@ -223,14 +338,19 @@ class Bot {
   }
 
   saveConversation(conversation, cb) {
-    conversation.markModified('userData')
-    conversation.markModified('states')
-    conversation.markModified('memory')
-    conversation.save(err => {
-      if (cb) {
-        cb(err)
-      }
-    })
+    if (this.useDb) {
+      conversation.markModified('userData')
+      conversation.markModified('actionStates')
+      conversation.markModified('memory')
+      conversation.markModified('lastAction')
+      conversation.save(err => {
+        if (cb) {
+          cb(err)
+        }
+      })
+    } else if (cb) {
+      cb()
+    }
   }
 }
 

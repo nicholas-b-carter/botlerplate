@@ -289,17 +289,15 @@ test('Bot#updateMemory', async t => {
   }
   conversation.memory = {}
 
-  bot.updateMemory(entities, conversation, mainAction).then(() => {
-    t.true(false) // this promise MUST reject
-  }).catch(err => {
-    t.true(_.isEqual(err, { en: ['I don\'t care!'] }))
+  bot.updateMemory(entities, conversation, mainAction).then(msg => {
+    t.deepEqual(msg, { en: ['I don\'t care!'] })
     t.true(typeof conversation.memory.date === 'undefined')
     t.true(typeof conversation.memory.color === 'undefined')
     // name should have been updated
     t.true(typeof conversation.memory.name === 'object')
     t.true(typeof conversation.memory.product === 'undefined')
     t.true(typeof conversation.memory['delivery-date'] === 'undefined')
-  })
+  }).catch(t.fail)
 })
 
 test('Bot#expandVariables', t => {

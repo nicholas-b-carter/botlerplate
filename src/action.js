@@ -82,24 +82,24 @@ class Action {
   }
 
   getMissingEntities(memory) {
-    return this.constraints.find(c => c.entities.some(e => memory[e.alias]) === false)
+    return this.constraints.filter(c => c.entities.some(e => memory[e.alias]) === false)
   }
 
   getMissingDependencies(actions, conversation) {
-    return this.dependencies.find(d => d.actions.map(a => actions[a])
-                                                .every(a => !a.isDone(conversation)))
+    return this.dependencies.filter(d => d.actions.map(a => actions[a])
+                                                  .every(a => !a.isDone(conversation)))
   }
 
   process(conversation, actions, recastResponse) {
     return new Promise((resolve, reject) => {
       if (this.isComplete(actions, conversation)) {
         if (this.reply) {
-          Promise.resolve(this.reply(conversation, recastResponse))
-                 .then(res => resolve(res)).catch(err => reject(err))
+          return Promise.resolve(this.reply(conversation, recastResponse))
+                        .then(resolve).catch(reject)
         }
         return reject(new Error('No reply found'))
       }
-      return resolve(this.getMissingEntity(conversation.memory))
+      return resolve(this.getRandom(this.getMissingEntities(conversation.memory)).isMissing)
     })
   }
 }

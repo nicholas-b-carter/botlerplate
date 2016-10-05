@@ -409,8 +409,7 @@ test('Updators should be able to reject or resolve', async t => {
     }],
   }
 
-  await b.updateMemory(entities, conversation, mainAction).then(t.fail).catch(err => {
-    t.is(conversation.memory.place.raw, '115 rue Cardinet')
-    t.deepEqual(err, { en: ['I already know'] })
-  })
+  await b.updateMemory(entities, conversation, mainAction).then(msg => {
+    t.deepEqual(msg, { en: ['I already know'] })
+  }).catch(t.fail)
 })
