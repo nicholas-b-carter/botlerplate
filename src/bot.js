@@ -137,14 +137,21 @@ class Bot {
           const results = res.data.results
 
           if (results.intents.length === 0) {
-            if (this.noIntent) {
+            const act = this.searchActionWithoutIntent(conversation)
+            if (!act && this.noIntent) {
               return resolve(this.evaluateReply(this.pickReplies([this.noIntent],
                                                                  results.language)))
             }
-            return reject('No response when no intent is matched')
+            if (!act) {
+              return reject('No response when no intent is matched')
+            }
           }
 
           let action = this.retrieveAction(conversation, results.intents[0].slug)
+
+          if (!action) {
+            return reject(new Error(`No action found for intent ${results.intents[0].slug}`))
+          }
           const replies = []
 
           let message = null
@@ -174,13 +181,20 @@ class Bot {
             if (action) {
               action.process(conversation, this.actions, results)
                 .then(resp => {
+                  let p = Promise.resolve()
                   if (action.isComplete(this.actions, conversation)) {
                     conversation.actionStates[action.name()] = true
+                    if (action.next) {
+                      p = this.actions[action.next].process(conversation, this.actions, results)
+                    }
                   }
-                  this.saveConversation(conversation, () => {
-                    replies.push(resp)
-                    const resps = this.pickReplies(replies, language)
-                    return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+                  p.then(nextResp => {
+                    this.saveConversation(conversation, () => {
+                      replies.push(resp)
+                      if (nextResp) { replies.push(nextResp) }
+                      const resps = this.pickReplies(replies, language)
+                      return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+                    })
                   })
                 }).catch(reject)
             } else {
@@ -194,7 +208,6 @@ class Bot {
           return true
         }).catch(reject)
       }).catch(reject)
-
 
       return true
     })
