@@ -187,7 +187,7 @@ class Bot {
       }
     }
 
-    return action || matchingActions[0]
+    return action || this.findActionByLevel(conversation, intent) || matchingActions[0]
   }
 
   /* eslint no-loop-func: "error" */
