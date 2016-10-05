@@ -186,7 +186,12 @@ class Bot {
                   let p = Promise.resolve()
                   if (action.isComplete(this.actions, conversation)) {
                     conversation.actionStates[action.name()] = true
-                    if (action.next) {
+                    if (action.endConversation) {
+                      conversation.memory = {}
+                      conversation.actionStates = {}
+                      conversation.userData = {}
+                      conversation.lastAction = null
+                    } else if (action.next) {
                       p = this.actions[action.next].process(conversation, this.actions, results)
                     }
                   }
