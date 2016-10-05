@@ -135,9 +135,10 @@ class Bot {
 
         this.callToRecast(input, tok, language).then(res => {
           const results = res.data.results
+          let act = null
 
           if (results.intents.length === 0) {
-            const act = this.searchActionWithoutIntent(conversation)
+            act = this.searchActionWithoutIntent(conversation, results.entities)
             if (!act && this.noIntent) {
               return resolve(this.evaluateReply(this.pickReplies([this.noIntent],
                                                                  results.language)))
@@ -147,7 +148,8 @@ class Bot {
             }
           }
 
-          let action = this.retrieveAction(conversation, results.intents[0].slug)
+
+          let action = act || this.retrieveAction(conversation, results.intents[0].slug)
 
           if (!action) {
             return reject(new Error(`No action found for intent ${results.intents[0].slug}`))
@@ -301,6 +303,37 @@ class Bot {
     return _.values(this.actions).filter(a => a.allDependencies().indexOf(action.name()) !== -1)
   }
 
+  searchActionWithoutIntent(conversation, entities) {
+    const last = this.actions[conversation.lastAction]
+    if (!last) { return null }
+
+    if (this.shouldChooseAction(last, conversation, entities)) {
+      return last
+    }
+
+    const nexts = this.nextOf(last)
+
+    if (nexts.length !== 1) { return null }
+
+    if (this.shouldChooseAction(nexts[0], conversation, entities)) {
+      return nexts[0]
+    }
+
+    return null
+  }
+
+  shouldChooseAction(action, conversation, entities) {
+    let shouldChoose = false
+
+    _.forOwn(entities, (values, key) => {
+      const constraint = action.allConstraints().find(c => c.entity === key)
+      if (values.length === 1 && constraint && !conversation.memory[constraint.alias]) {
+        shouldChoose = true
+      }
+    })
+    return shouldChoose
+  }
+
   retrieveAction(conversation, intent) {
     const matchingActions = _.values(this.actions).filter(a => a.intent === intent)
     const lastAction = this.actions[conversation.lastAction] || null
@@ -321,7 +354,7 @@ class Bot {
     return action || this.findActionByLevel(conversation, intent) || matchingActions[0]
   }
 
-  /* eslint no-loop-func: "error" */
+  /* eslint no-loop-func: "off" */
 
   findActionByLevel(conversation, intent) {
     const requiredActions = new Set(_.flatten(_.values(this.actions).map(a => a.allDependencies())))

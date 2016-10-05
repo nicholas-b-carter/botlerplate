@@ -1,6 +1,10 @@
+import readline from 'readline'
+import mongoose from 'mongoose'
+
 import Action from './action'
 import Bot from './bot'
-import readline from 'readline'
+
+const recastToken = ''
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -129,14 +133,18 @@ class Murder extends Action {
 }
 
 
+const token = recastToken || process.env.TOKEN || process.argv[2]
+
 const bot = new Bot({
-  token: '16a46f6e1deb16ac4476d5a1e11029cb',
+  token,
   language: 'en',
   noIntent: {
     en: ['Aye donte endeurstende'],
   },
 })
+
 bot.registerActions([Greetings, Signin, Signup, InfosSignin, InfosSignup, Murder, Yes, No])
+
 bot.useDatabase({
   hostname: 'localhost',
   port: '27017',
@@ -148,10 +156,22 @@ process.stdin.setEncoding('utf8')
 
 /* eslint no-console: "off" */
 
+
 const conversId = Math.floor((Math.random() * 1000) + 1).toString()
 
 console.log()
 process.stdout.write('> ')
+
+rl.on('SIGINT', () => {
+  rl.question('Exit? Y/n ', answer => {
+    if (answer === '' || answer.match(/^y(es)?$/i)) {
+      if (bot.useDb) {
+        mongoose.connection.close()
+        rl.close()
+      }
+    }
+  })
+})
 
 rl.on('line', input => {
   console.log()
