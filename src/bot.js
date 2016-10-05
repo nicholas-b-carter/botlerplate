@@ -341,11 +341,13 @@ class Bot {
 
   retrieveAction(conversation, intent) {
     const matchingActions = _.values(this.actions).filter(a => a.intent === intent)
-    const lastAction = this.actions[conversation.lastAction] || null
+    const lastAction = this.actions[conversation.lastAction]
     let action = null
 
     if (matchingActions.length === 0) {
       return null
+    } else if (matchingActions.length === 1) {
+      return matchingActions[0]
     }
 
     if (lastAction && matchingActions.length > 1) {
