@@ -2,4 +2,4 @@ SPECS.md
 node_modules
 .nyc_output
 build
-src/actions/*
+src/actions/*.js
