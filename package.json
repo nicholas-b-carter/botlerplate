@@ -8,7 +8,8 @@
     "lint": "eslint src",
     "test:watch": "ava test --watch",
     "test": "ava test",
-    "test:cover": "nyc ava test"
+    "test:cover": "nyc ava test",
+	"emulator": "babel-node ./src/emulator.js"
   },
   "babel": {
     "presets": [
