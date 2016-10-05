@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 class Action {
   constructor() {
     this.constraints = []
@@ -42,6 +44,14 @@ class Action {
     }
 
     return true
+  }
+
+  allDependencies() {
+    return _.flatten(this.dependencies.map(d => d.actions))
+  }
+
+  allConstraints() {
+    return _.flatten(this.constraints.map(c => c.entities))
   }
 
   dependenciesAreComplete(actions, conversation) {

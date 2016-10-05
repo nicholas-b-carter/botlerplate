@@ -126,11 +126,8 @@ class Bot {
               })
             }))(actionKnowledge.alias, entity))
           } else {
-            const gblKnowledges = _.values(this.actions)
-                                   .map(a => a.constraints)
-                                   .reduce((a, b) => a.concat(b))
-                                   .map(c => c.entities)
-                                   .reduce((a, b) => a.concat(b))
+            const gblKnowledges = _.flatten(_.values(this.actions)
+                                             .map(a => a.allConstraints()))
                                    .filter(k => k.entity === name)
 
             if (gblKnowledges.length === 1) {
@@ -167,6 +164,59 @@ class Bot {
       })
       return true
     })
+  }
+
+  nextOf(action) {
+    return _.values(this.actions).filter(a => a.allDependencies().indexOf(action.name()) !== -1)
+  }
+
+  retrieveAction(conversation, intent) {
+    const matchingActions = _.values(this.actions).filter(a => a.intent === intent)
+    const lastAction = this.actions[conversation.lastAction] || null
+    let action = null
+
+    if (matchingActions.length === 0) {
+      // handle
+    }
+
+    if (lastAction && matchingActions.length > 1) {
+      if (lastAction.isDone(conversation)) {
+        action = matchingActions.find(a => this.nextOf(lastAction).indexOf(a) !== -1)
+      } else {
+        action = matchingActions.find(a => a.name() === lastAction.name())
+      }
+    }
+
+    return action || matchingActions[0]
+  }
+
+  /* eslint no-loop-func: "error" */
+
+  findActionByLevel(conversation, intent) {
+    const requiredActions = new Set(_.flatten(_.values(this.actions).map(a => a.allDependencies())))
+    const leafs = _.keys(this.actions).filter(a => !requiredActions.has(a))
+    let queue = leafs.map(a => this.actions[a])
+    const buffer = []
+    let level = 0
+
+    while (queue.length > 0) {
+      queue.filter(a => a.intent === intent).forEach(action => {
+        if (!action.isDone(conversation)) {
+          buffer.push({ level, action })
+        }
+      })
+
+      const sublevel = _.flatten(queue.map(a => a.allDependencies().map(ac => this.actions[ac])))
+
+      queue = sublevel
+      level += 1
+    }
+
+    if (buffer.length === 0) { return null }
+
+    const sorted = buffer.sort((a, b) => a.level - b.level)
+
+    return sorted[sorted.length - 1].action
   }
 
   saveConversation(conversation, cb) {

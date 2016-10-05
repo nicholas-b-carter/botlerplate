@@ -310,3 +310,140 @@ test('Bot#expandVariables', t => {
   t.is(b.expandVariables('Hello {{name.}}', memory), 'Hello Jean')
   t.is(b.expandVariables('Hello {{.value}}', memory), 'Hello {{.value}}')
 })
+
+test('Bot#retrieveAction', t => {
+  /**
+   *                               ____Happy
+   *                              /
+   *            ____ Account ____|
+   *           /                  \____NotHappy
+   * Greet ---|
+   *           \____ NoAccount
+   */
+  class Greet extends Action {
+    constructor() {
+      super()
+      this.intent = 'greetings'
+    }
+  }
+
+  class Account extends Action {
+    constructor() {
+      super()
+      this.intent = 'yes'
+      this.dependencies = [{ actions: ['Greet'], isMissing: {} }]
+    }
+  }
+
+  class NoAccount extends Action {
+    constructor() {
+      super()
+      this.intent = 'no'
+      this.dependencies = [{ actions: ['Greet'], isMissing: {} }]
+    }
+  }
+
+  class Happy extends Action {
+    constructor() {
+      super()
+      this.intent = 'yes'
+      this.dependencies = [{ actions: ['Account'], isMissing: {} }]
+    }
+  }
+
+  class NotHappy extends Action {
+    constructor() {
+      super()
+      this.intent = 'no'
+      this.dependencies = [{ actions: ['Account'], isMissing: {} }]
+    }
+  }
+
+  const b = new Bot()
+  b.registerActions([Greet, Account, NoAccount, Happy, NotHappy])
+  const conversation = {
+    lastAction: null,
+    actionStates: {},
+    memory: {},
+  }
+
+  let a = b.retrieveAction(conversation, 'greetings')
+  t.true(a instanceof Greet)
+
+  conversation.lastAction = 'Greetings'
+  b.markActionAsDone('Greetings', conversation)
+  a = b.retrieveAction(conversation, 'yes')
+  t.true(a instanceof Account)
+
+  conversation.lastAction = 'Account'
+  b.markActionAsDone('Account', conversation)
+  a = b.retrieveAction(conversation, 'no')
+  t.true(a instanceof NotHappy)
+})
+
+test('Action#findctionByLevel', t => {
+
+  /**
+   *                               ____Happy
+   *                              /
+   *            ____ Account ____|
+   *           /                  \____NotHappy
+   * Greet ---|
+   *           \____ NoAccount
+   */
+  class Greet extends Action {
+    constructor() {
+      super()
+      this.intent = 'greetings'
+    }
+  }
+
+  class Account extends Action {
+    constructor() {
+      super()
+      this.intent = 'yes'
+      this.dependencies = [{ actions: ['Greet'], isMissing: {} }]
+    }
+  }
+
+  class NoAccount extends Action {
+    constructor() {
+      super()
+      this.intent = 'no'
+      this.dependencies = [{ actions: ['Greet'], isMissing: {} }]
+    }
+  }
+
+  class Happy extends Action {
+    constructor() {
+      super()
+      this.intent = 'yes'
+      this.dependencies = [{ actions: ['Account'], isMissing: {} }]
+    }
+  }
+
+  class NotHappy extends Action {
+    constructor() {
+      super()
+      this.intent = 'no'
+      this.dependencies = [{ actions: ['Account'], isMissing: {} }]
+    }
+  }
+
+  const b = new Bot()
+  b.registerActions([Greet, Account, NoAccount, Happy, NotHappy])
+  const conversation = {
+    lastAction: null,
+    actionStates: {},
+    memory: {},
+  }
+
+  let a = b.findActionByLevel(conversation, 'yes')
+  t.truthy(a)
+  t.is(a.name(), 'Account')
+
+  conversation.actionStates.Account = true
+   a = b.findActionByLevel(conversation, 'yes')
+  t.truthy(a)
+  t.is(a.name(), 'Happy')
+})

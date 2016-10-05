@@ -5,6 +5,7 @@ const conversationSchema = new mongoose.Schema({
   memory: Object,
   actionStates: Object,
   userData: Object,
+  lastAction: String,
 })
 
 const Conversation = mongoose.model('Conversation', conversationSchema)
