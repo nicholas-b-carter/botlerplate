@@ -340,7 +340,7 @@ class Bot {
     let action = null
 
     if (matchingActions.length === 0) {
-      // handle
+      return null
     }
 
     if (lastAction && matchingActions.length > 1) {
