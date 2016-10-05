@@ -67,6 +67,16 @@ test('Bot#registerAction', t => {
   }
   t.is(error, null)
   t.is(_.keys(bot.actions).length, 1)
+
+  error = null
+  try {
+    bot.registerActions(Greetings)
+  } catch (e) {
+    error = e
+  }
+
+  t.truthy(error)
+  t.is(error.message, 'Greetings is already registered')
 })
 
 test('Bot#findActionByName', t => {

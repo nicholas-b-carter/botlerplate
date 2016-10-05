@@ -31,6 +31,9 @@ class Bot {
       Actions.forEach(action => { this.registerActions(action) })
     } else {
       const newAction = new Actions()
+      if (this.actions[newAction.name()]) {
+        throw new Error(`${newAction.name()} is already registered`)
+      }
       if (!newAction.validate()) {
         throw new Error(`Invalid action: ${newAction.name()}`)
       }
