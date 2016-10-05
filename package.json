@@ -9,7 +9,7 @@
     "test:watch": "ava test --watch",
     "test": "ava test",
     "test:cover": "nyc ava test",
-	"emulator": "babel-node ./src/emulator.js"
+    "emulator": "babel-node ./src/emulator.js"
   },
   "babel": {
     "presets": [
@@ -50,6 +50,7 @@
     "axios": "^0.14.0",
     "lodash": "^4.16.2",
     "mongoose": "^4.6.1",
-    "nyc": "^8.3.0"
+    "nyc": "^8.3.0",
+    "require-all": "^2.0.0"
   }
 }
