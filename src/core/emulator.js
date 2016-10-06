@@ -19,7 +19,6 @@ const token = recastToken || process.env.TOKEN || process.argv[2]
 
 const bot = new Bot({
   token,
-  language: 'en',
   noIntent: {
     en: ['Aye donte endeurstende'],
   },

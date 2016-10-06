@@ -4,4 +4,8 @@ module.exports = {
     port: '27017',
     name: 'test',
   },
+  microsoft: {
+    appId: '',
+    appSecret: '',
+  },
 }
