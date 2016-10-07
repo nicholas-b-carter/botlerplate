@@ -115,7 +115,7 @@ class Bot {
     return axios({
       method: 'post',
       headers: { Authorization: `Token ${token}` },
-      url: 'https://api-development.recast.ai/v2/request',
+      url: 'https://api.recast.ai/v2/request',
       data,
     })
   }
