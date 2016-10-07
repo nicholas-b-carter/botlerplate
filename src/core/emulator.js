@@ -15,13 +15,11 @@ const rl = readline.createInterface({
   output: process.stdout,
 })
 
-const token = recastToken || process.env.TOKEN || process.argv[2]
+const token = recastToken || config.recastToken || process.env.TOKEN || process.argv[2]
 
 const bot = new Bot({
   token,
-  noIntent: {
-    en: ['Aye donte endeurstende'],
-  },
+  noIntent: config.noIntentAnsers || { en: ['Aye donte endeurstende'] },
 })
 
 bot.registerActions(_.values(actions))

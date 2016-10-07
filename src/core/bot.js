@@ -96,7 +96,7 @@ class Bot {
       if (!variable[field]) { return '' }
       return variable[field]
     }
-    return reply.replace(/{{\s*([a-zA-Z0-9\-_]+)\.?([a-zA-Z0-9\-_]+)?\s*}}/, replacer)
+    return reply.replace(/{{\s*([a-zA-Z0-9\-_]+)\.?([a-zA-Z0-9\-_]+)?\s*}}/g, replacer)
   }
 
   evaluateReply(reply, memory) {
@@ -199,14 +199,14 @@ class Bot {
                     this.saveConversation(conversation, () => {
                       replies.push(resp)
                       if (nextResp) { replies.push(nextResp) }
-                      const resps = this.pickReplies(replies, language)
+                      const resps = this.pickReplies(replies, results.language)
                       return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
                     })
                   })
                 }).catch(reject)
             } else {
               this.saveConversation(conversation, () => {
-                const resps = this.pickReplies(replies, language)
+                const resps = this.pickReplies(replies, results.language)
                 return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
               })
             }
