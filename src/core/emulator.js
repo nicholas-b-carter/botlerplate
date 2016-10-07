@@ -4,9 +4,9 @@ import mongoose from 'mongoose'
 import requireAll from 'require-all'
 
 import Bot from './bot'
-import config from '../config'
+import config from '../../config'
 
-const actions = requireAll(`${__dirname}/actions`)
+const actions = requireAll(`${__dirname}/../actions`)
 
 const recastToken = ''
 

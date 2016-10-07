@@ -9,7 +9,7 @@
     "test:watch": "ava test --watch",
     "test": "ava test",
     "test:cover": "nyc ava test",
-    "emulator": "babel-node ./src/emulator.js"
+    "emulator": "babel-node ./src/core/emulator.js"
   },
   "babel": {
     "presets": [
