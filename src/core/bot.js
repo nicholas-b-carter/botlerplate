@@ -30,7 +30,7 @@ class Bot {
     })
   }
 
-  setDefaultReplies(replies) {
+  setFallbackReplies(replies) {
     this.fallbackReplies = replies
   }
 

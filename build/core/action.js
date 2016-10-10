@@ -16,7 +16,7 @@ var Action = function () {
   function Action() {
     _classCallCheck(this, Action);
 
-    this.constraints = [];
+    this.knowledges = [];
     this.dependencies = [];
     this.defaultValidator = function (entity) {
       return entity;
@@ -42,7 +42,7 @@ var Action = function () {
         return false;
       }
 
-      if (!Array.isArray(this.dependencies) || !Array.isArray(this.constraints)) {
+      if (!Array.isArray(this.dependencies) || !Array.isArray(this.knowledges)) {
         return false;
       }
 
@@ -54,7 +54,7 @@ var Action = function () {
         return false;
       }
 
-      if (!this.constraints.every(function (c) {
+      if (!this.knowledges.every(function (c) {
         return _typeof(c.isMissing) === 'object' && Array.isArray(c.entities) && c.entities.every(function (e) {
           return (typeof e === 'undefined' ? 'undefined' : _typeof(e)) === 'object' && typeof e.entity === 'string' && typeof e.alias === 'string';
         });
@@ -79,9 +79,9 @@ var Action = function () {
       }));
     }
   }, {
-    key: 'allConstraints',
-    value: function allConstraints() {
-      return _lodash2.default.flatten(this.constraints.map(function (c) {
+    key: 'allKnowledges',
+    value: function allKnowledges() {
+      return _lodash2.default.flatten(this.knowledges.map(function (c) {
         return c.entities;
       }));
     }
@@ -99,10 +99,10 @@ var Action = function () {
       });
     }
   }, {
-    key: 'constraintsAreComplete',
-    value: function constraintsAreComplete(memory) {
-      return this.constraints.every(function (constraint) {
-        return constraint.entities.some(function (e) {
+    key: 'knowledgesAreComplete',
+    value: function knowledgesAreComplete(memory) {
+      return this.knowledges.every(function (knowledge) {
+        return knowledge.entities.some(function (e) {
           return memory[e.alias];
         });
       });
@@ -115,7 +115,7 @@ var Action = function () {
   }, {
     key: 'isComplete',
     value: function isComplete(actions, conversation) {
-      return this.dependenciesAreComplete(actions, conversation) && this.constraintsAreComplete(conversation.memory);
+      return this.dependenciesAreComplete(actions, conversation) && this.knowledgesAreComplete(conversation.memory);
     }
   }, {
     key: 'isDone',
@@ -125,7 +125,7 @@ var Action = function () {
   }, {
     key: 'getMissingEntities',
     value: function getMissingEntities(memory) {
-      return this.constraints.filter(function (c) {
+      return this.knowledges.filter(function (c) {
         return c.entities.some(function (e) {
           return memory[e.alias];
         }) === false;

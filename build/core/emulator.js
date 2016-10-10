@@ -39,7 +39,7 @@ var token = recastToken || _config2.default.recastToken || process.env.TOKEN || 
 
 var bot = new _bot2.default({
   token: token,
-  noIntent: _config2.default.noIntentAnsers || { en: ['Aye donte endeurstende'] }
+  fallbackReplies: { en: ['Aye donte endeurstende'] }
 });
 
 bot.registerActions(_lodash2.default.values(actions));

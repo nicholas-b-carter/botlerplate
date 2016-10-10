@@ -33,7 +33,7 @@ var Bot = function () {
     this.actions = {};
     this.token = opts && opts.token;
     this.language = opts && opts.language;
-    this.noIntent = opts && opts.noIntent;
+    this.fallbackReplies = opts && opts.fallbackReplies;
   }
 
   _createClass(Bot, [{
@@ -56,9 +56,9 @@ var Bot = function () {
       });
     }
   }, {
-    key: 'setDefaultReplies',
-    value: function setDefaultReplies(replies) {
-      this.noIntent = replies;
+    key: 'setFallbackReplies',
+    value: function setFallbackReplies(replies) {
+      this.fallbackReplies = replies;
     }
   }, {
     key: 'registerActions',
@@ -204,8 +204,8 @@ var Bot = function () {
 
             if (results.intents.length === 0) {
               act = _this3.searchActionWithoutIntent(conversation, results.entities);
-              if (!act && _this3.noIntent) {
-                return resolve(_this3.evaluateReply(_this3.pickReplies([_this3.noIntent], results.language)));
+              if (!act && _this3.fallbackReplies) {
+                return resolve(_this3.evaluateReply(_this3.pickReplies([_this3.fallbackReplies], results.language)));
               }
               if (!act) {
                 return reject('No response when no intent is matched');
@@ -335,8 +335,8 @@ var Bot = function () {
     }
 
     // Updates memory with input's entities
-    // Priority: 1) constraint of the current action
-    //           2) any constraint that is alone in the bot
+    // Priority: 1) knowledge of the current action
+    //           2) any knowledge that is alone in the bot
 
   }, {
     key: 'updateMemory',
@@ -345,7 +345,7 @@ var Bot = function () {
 
       var actionKnowledges = null;
       if (action) {
-        actionKnowledges = _lodash2.default.flatten(action.constraints.map(function (c) {
+        actionKnowledges = _lodash2.default.flatten(action.knowledges.map(function (c) {
           return c.entities;
         }));
       }
@@ -359,7 +359,7 @@ var Bot = function () {
           var name = _ref2[0];
           var ents = _ref2[1];
 
-          // search for a constraint of the current action
+          // search for a knowledge of the current action
           var actionKnowledge = actionKnowledges && actionKnowledges.find(function (k) {
             return k.entity === name;
           }) || null;
@@ -382,7 +382,7 @@ var Bot = function () {
               })();
             } else {
               var gblKnowledges = _lodash2.default.flatten(_lodash2.default.values(_this5.actions).map(function (a) {
-                return a.allConstraints();
+                return a.allKnowledges();
               })).filter(function (k) {
                 return k.entity === name;
               });
@@ -473,10 +473,10 @@ var Bot = function () {
       var shouldChoose = false;
 
       _lodash2.default.forOwn(entities, function (values, key) {
-        var constraint = action.allConstraints().find(function (c) {
+        var knowledge = action.allKnowledges().find(function (c) {
           return c.entity === key;
         });
-        if (values.length === 1 && constraint && !conversation.memory[constraint.alias]) {
+        if (values.length === 1 && knowledge && !conversation.memory[knowledge.alias]) {
           shouldChoose = true;
         }
       });
