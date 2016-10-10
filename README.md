@@ -26,6 +26,8 @@ npm install --save botlerplate
 npm install -g generator-botlerplate
 yo botlerplate
 ```
+If you use the generator, see the [documentation](https://github.com/RecastAI/generator-botlerplate)
+
 
 For detailed information about how the framework works, see the [wiki](https://github.com/RecastAI/botlerplate/wiki)
 
@@ -39,5 +41,3 @@ cd mybot
 cp -r src/example/actions src/actions
 npm run emulator YOUR_RECAST_TOKEN -- --db
 ```
-
-If you use the generator, see the [documentation](https://github.com/RecastAI/generator-botlerplate)
