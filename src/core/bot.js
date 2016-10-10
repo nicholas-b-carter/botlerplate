@@ -240,7 +240,8 @@ class Bot {
     return responses.map(r => {
       if (Array.isArray(r)) { return this.getRandom(r) }
 
-      const resps = r[language]
+      const resps = r[language] || r.en
+
 
       if (Array.isArray(resps)) { return this.getRandom(resps) }
 
