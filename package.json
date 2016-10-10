@@ -2,7 +2,7 @@
   "name": "botlerplate",
   "version": "1.0.0",
   "description": "Bot framework by Recast.AI",
-  "main": "src/index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "babel src -d build",
     "lint": "eslint src",
@@ -10,6 +10,10 @@
     "test": "ava test",
     "test:cover": "nyc ava test",
     "emulator": "babel-node ./src/core/emulator.js"
+  },
+  "repository": {
+	"type": "git",
+	"url": "git+https://github.com/RecastAI/botlerplate.git"
   },
   "babel": {
     "presets": [
@@ -30,8 +34,8 @@
     "recast",
     "Recast.AI"
   ],
-  "author": "Francois Triquet",
-  "license": "ISC",
+  "author": "Francois Triquet <francois.triquet@recast.ai> (https://recast.ai)",
+  "license": "MIT",
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-cli": "^6.14.0",
