@@ -4,9 +4,9 @@ import sinon from 'sinon'
 import 'sinon-as-promised'
 import 'sinon-mongoose'
 
-import Bot from '../src/bot'
-import Action from '../src/action'
-import Conversation from '../src/conversation'
+import Bot from '../src/core/bot'
+import Action from '../src/core/action'
+import Conversation from '../src/core/conversation'
 
 class Greetings extends Action {
   constructor() {
@@ -44,7 +44,7 @@ test('Bot#registerAction', t => {
   class Invalid extends Action {
     constructor() {
       super()
-      this.constraints = [{ entity: 'datetime', alias: 'departure' }]
+      this.knowledges = [{ entity: 'datetime', alias: 'departure' }]
     }
   }
 
@@ -121,7 +121,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'greetings'
-      this.constraints = [
+      this.knowledges = [
         {
           isMissing: { en: ['How should I call you?'] },
           entities: [{ entity: 'person', alias: 'name' }],
@@ -134,7 +134,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'delivery'
-      this.constraints = [
+      this.knowledges = [
         {
           isMissing: { en: ['Where do you want to be delivered?'] },
           entities: [{ entity: 'datetime', alias: 'delivery-date' }],
@@ -155,7 +155,7 @@ test('Bot#updateMemory', async t => {
         isMissing: {},
         actions: ['Greetings'],
       }]
-      this.constraints = [{
+      this.knowledges = [{
         isMissing: { en: ['What product would you like?'] },
         entities: [{ entity: 'number', alias: 'product' }],
       }, {
@@ -269,7 +269,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'bad'
-      this.constraints = [
+      this.knowledges = [
         {
           isMissing: {},
           entities: [{

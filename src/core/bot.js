@@ -253,19 +253,19 @@ class Bot {
   }
 
   // Updates memory with input's entities
-  // Priority: 1) constraint of the current action
-  //           2) any constraint that is alone in the bot
+  // Priority: 1) knowledge of the current action
+  //           2) any knowledge that is alone in the bot
   updateMemory(entities, conversation, action) {
     let actionKnowledges = null
     if (action) {
-      actionKnowledges = _.flatten(action.constraints.map(c => c.entities))
+      actionKnowledges = _.flatten(action.knowledges.map(c => c.entities))
     }
     return new Promise(resolve => {
       const promises = []
 
       // loop through the entities map
       _.toPairs(entities).forEach(([name, ents]) => {
-        // search for a constraint of the current action
+        // search for a knowledge of the current action
         const actionKnowledge =
           (actionKnowledges && actionKnowledges.find(k => k.entity === name)) || null
         ents.forEach(entity => {
@@ -281,7 +281,7 @@ class Bot {
             }))(actionKnowledge.alias, entity))
           } else {
             const gblKnowledges = _.flatten(_.values(this.actions)
-                                             .map(a => a.allConstraints()))
+                                             .map(a => a.allKnowledges()))
                                    .filter(k => k.entity === name)
 
             if (gblKnowledges.length === 1) {
@@ -347,8 +347,8 @@ class Bot {
     let shouldChoose = false
 
     _.forOwn(entities, (values, key) => {
-      const constraint = action.allConstraints().find(c => c.entity === key)
-      if (values.length === 1 && constraint && !conversation.memory[constraint.alias]) {
+      const knowledge = action.allKnowledges().find(c => c.entity === key)
+      if (values.length === 1 && knowledge && !conversation.memory[knowledge.alias]) {
         shouldChoose = true
       }
     })

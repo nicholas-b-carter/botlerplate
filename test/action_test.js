@@ -1,12 +1,12 @@
 import test from 'ava'
-import Bot from '../src/bot'
-import Action from '../src/action'
+import Bot from '../src/core/bot'
+import Action from '../src/core/action'
 
 class Greetings extends Action {
   constructor() {
     super()
     this.intent = 'greetings'
-    this.constraints = [
+    this.knowledges = [
       {
         isMissing: { en: ['How should I call you?'] },
         entities: [{ entity: 'person', alias: 'name' }],
@@ -19,7 +19,7 @@ class Delivery extends Action {
   constructor() {
     super()
     this.intent = 'delivery'
-    this.constraints = [
+    this.knowledges = [
       {
         isMissing: { en: ['Where do you want to be delivered?'] },
         entities: [{ entity: 'datetime', alias: 'delivery-date' }],
@@ -40,7 +40,7 @@ class Order extends Action {
       isMissing: {},
       actions: ['Greetings'],
     }]
-    this.constraints = [{
+    this.knowledges = [{
       isMissing: { en: ['What product would you like?'] },
       entities: [{ entity: 'number', alias: 'product' }],
     }]
@@ -68,7 +68,7 @@ test('Action#validate', t => {
   class NoIntent extends Action {
     constructor() {
       super()
-      this.constraints = []
+      this.knowledges = []
     }
   }
   let a = new NoIntent()
@@ -78,7 +78,7 @@ test('Action#validate', t => {
     constructor() {
       super()
       this.intent = 'example'
-      this.constraints = [
+      this.knowledges = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ entity: 'person', alias: 'name' }] },
       ]
@@ -95,7 +95,7 @@ test('Action#validate', t => {
     constructor() {
       super()
       this.intent = 'example'
-      this.constraints = [
+      this.knowledges = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ entity: 'person', alias: 'name' }] },
       ]
@@ -108,11 +108,11 @@ test('Action#validate', t => {
   a = new InvalidDependencies()
   t.false(a.validate())
 
-  class InvalidConstraints extends Action {
+  class InvalidKnowledges extends Action {
     constructor() {
       super()
       this.intent = 'example'
-      this.constraints = [
+      this.knowledges = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ alias: 'name' }] },
       ]
@@ -122,7 +122,7 @@ test('Action#validate', t => {
       ]
     }
   }
-  a = new InvalidConstraints()
+  a = new InvalidKnowledges()
   t.false(a.validate())
 
   class RequiresItself extends Action {
@@ -135,23 +135,23 @@ test('Action#validate', t => {
   t.false(a.validate())
 })
 
-test('Action#constraintsAreComplete', t => {
+test('Action#knowledgesAreComplete', t => {
   const { Greetings: greet, Order: order } = bot.actions
   const conversation = {
     userData: {},
     actionStates: {},
     memory: {},
   }
-  t.false(greet.constraintsAreComplete(conversation.memory))
-  t.false(order.constraintsAreComplete(conversation.memory))
+  t.false(greet.knowledgesAreComplete(conversation.memory))
+  t.false(order.knowledgesAreComplete(conversation.memory))
 
   conversation.memory.name = { raw: 'Jean Valjean', value: 'Jean Valjean' }
-  t.true(greet.constraintsAreComplete(conversation.memory))
-  t.false(order.constraintsAreComplete(conversation.memory))
+  t.true(greet.knowledgesAreComplete(conversation.memory))
+  t.false(order.knowledgesAreComplete(conversation.memory))
 
   conversation.memory.product = { raw: 'one', value: 1 }
-  t.true(greet.constraintsAreComplete(conversation.memory))
-  t.true(order.constraintsAreComplete(conversation.memory))
+  t.true(greet.knowledgesAreComplete(conversation.memory))
+  t.true(order.knowledgesAreComplete(conversation.memory))
 })
 
 test('Action#dependenciesAreComplete', t => {
@@ -221,7 +221,7 @@ test('Action#isComplete', t => {
   t.false(delivery.isComplete(bot.actions, conversation))
   t.false(goodbyes.isComplete(bot.actions, conversation))
 
-  // complete delivery constraint
+  // complete delivery knowledge
   conversation.memory['delivery-date'] = {
     raw: 'tomorrow at 9pm',
     formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
@@ -318,7 +318,7 @@ test('Updators should be able to return a value', async t => {
     constructor() {
       super()
       this.intent = 'command'
-      this.constraints = [
+      this.knowledges = [
         {
           entities: [{
             entity: 'location',
@@ -360,7 +360,7 @@ test('Updators should be able to reject or resolve', async t => {
     constructor() {
       super()
       this.intent = 'command'
-      this.constraints = [
+      this.knowledges = [
         {
           entities: [{
             entity: 'location',

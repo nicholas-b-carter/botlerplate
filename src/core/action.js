@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 class Action {
   constructor() {
-    this.constraints = []
+    this.knowledges = []
     this.dependencies = []
     this.defaultValidator = (entity) => entity
   }
@@ -20,7 +20,7 @@ class Action {
       return false
     }
 
-    if (!Array.isArray(this.dependencies) || !Array.isArray(this.constraints)) {
+    if (!Array.isArray(this.dependencies) || !Array.isArray(this.knowledges)) {
       return false
     }
 
@@ -30,7 +30,7 @@ class Action {
       return false
     }
 
-    if (!this.constraints.every(c => typeof c.isMissing === 'object' &&
+    if (!this.knowledges.every(c => typeof c.isMissing === 'object' &&
                                      Array.isArray(c.entities) &&
                                      c.entities.every(e => typeof e === 'object' &&
                                                            typeof e.entity === 'string' &&
@@ -50,8 +50,8 @@ class Action {
     return _.flatten(this.dependencies.map(d => d.actions))
   }
 
-  allConstraints() {
-    return _.flatten(this.constraints.map(c => c.entities))
+  allKnowledges() {
+    return _.flatten(this.knowledges.map(c => c.entities))
   }
 
   dependenciesAreComplete(actions, conversation) {
@@ -64,8 +64,8 @@ class Action {
     }))
   }
 
-  constraintsAreComplete(memory) {
-    return this.constraints.every(constraint => constraint.entities.some(e => memory[e.alias]))
+  knowledgesAreComplete(memory) {
+    return this.knowledges.every(knowledge => knowledge.entities.some(e => memory[e.alias]))
   }
 
   isActionable(actions, conversation) {
@@ -74,7 +74,7 @@ class Action {
 
   isComplete(actions, conversation) {
     return this.dependenciesAreComplete(actions, conversation) &&
-      this.constraintsAreComplete(conversation.memory)
+      this.knowledgesAreComplete(conversation.memory)
   }
 
   isDone(conversation) {
@@ -82,7 +82,7 @@ class Action {
   }
 
   getMissingEntities(memory) {
-    return this.constraints.filter(c => c.entities.some(e => memory[e.alias]) === false)
+    return this.knowledges.filter(c => c.entities.some(e => memory[e.alias]) === false)
   }
 
   getMissingDependencies(actions, conversation) {
