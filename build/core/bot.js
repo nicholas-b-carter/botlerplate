@@ -56,6 +56,11 @@ var Bot = function () {
       });
     }
   }, {
+    key: 'setDefaultReplies',
+    value: function setDefaultReplies(replies) {
+      this.noIntent = replies;
+    }
+  }, {
     key: 'registerActions',
     value: function registerActions(Actions) {
       var _this = this;

@@ -30,6 +30,10 @@ class Bot {
     })
   }
 
+  setDefaultReplies(replies) {
+    this.noIntent = replies
+  }
+
   registerActions(Actions) {
     if (Array.isArray(Actions)) {
       Actions.forEach(action => { this.registerActions(action) })
