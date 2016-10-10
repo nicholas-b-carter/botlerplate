@@ -11,7 +11,7 @@ Thie module allows you to start your project with strong bases.
 ### Manual install
 
 ```bash
-git clone htts://github.com/RecastAI/boterplate
+git clone https://github.com/RecastAI/botlerplate
 ```
 
 ### Using npm
