@@ -11,7 +11,7 @@ class Bot {
     this.actions = {}
     this.token = opts && opts.token
     this.language = opts && opts.language
-    this.noIntent = opts && opts.noIntent
+    this.fallbackReplies = opts && opts.fallbackReplies
   }
 
   useDatabase(conf) {
@@ -31,7 +31,7 @@ class Bot {
   }
 
   setDefaultReplies(replies) {
-    this.noIntent = replies
+    this.fallbackReplies = replies
   }
 
   registerActions(Actions) {
@@ -143,8 +143,8 @@ class Bot {
 
           if (results.intents.length === 0) {
             act = this.searchActionWithoutIntent(conversation, results.entities)
-            if (!act && this.noIntent) {
-              return resolve(this.evaluateReply(this.pickReplies([this.noIntent],
+            if (!act && this.fallbackReplies) {
+              return resolve(this.evaluateReply(this.pickReplies([this.fallbackReplies],
                                                                  results.language)))
             }
             if (!act) {

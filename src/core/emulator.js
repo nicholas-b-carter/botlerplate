@@ -19,7 +19,7 @@ const token = recastToken || config.recastToken || process.env.TOKEN || process.
 
 const bot = new Bot({
   token,
-  noIntent: config.noIntentAnsers || { en: ['Aye donte endeurstende'] },
+  fallbackReplies: { en: ['Aye donte endeurstende'] },
 })
 
 bot.registerActions(_.values(actions))
