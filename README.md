@@ -27,4 +27,17 @@ npm install -g generator-botlerplate
 yo botlerplate
 ```
 
+For detailed information about how the framework works, see the [wiki](https://github.com/RecastAI/botlerplate/wiki)
+
+## Example
+
+To have a running example of botlerplate, fork [this bot](https://recast.ai/ftriquet/meeting-room-bot) on Recast and follow these commands.
+
+```bash
+git clone https://github.com/RecastAI/botlerplate.git mybot
+cd mybot
+cp -r src/example/actions src/actions
+npm run emulator YOUR_RECAST_TOKEN -- --db
+```
+
 If you use the generator, see the [documentation](https://github.com/RecastAI/generator-botlerplate)
