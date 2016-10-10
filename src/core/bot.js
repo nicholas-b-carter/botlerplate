@@ -202,8 +202,20 @@ class Bot {
                       const resps = this.pickReplies(replies, results.language)
                       return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
                     })
+                  }).catch(nextResp => {
+                    this.saveConversation(conversation, () => {
+                      replies.push(nexResp)
+                      const resps = this.pickReplies(replies, results.language)
+                      return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+                    })
                   })
-                }).catch(reject)
+                }).catch(resp => {
+                  this.saveConversation(conversation, () => {
+                    replies.push(resp)
+                    const resps = this.pickReplies(replies, results.language)
+                    return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
+                  })
+                })
             } else {
               this.saveConversation(conversation, () => {
                 const resps = this.pickReplies(replies, results.language)
