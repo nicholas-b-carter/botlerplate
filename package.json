@@ -1,6 +1,6 @@
 {
   "name": "botlerplate",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Bot framework by Recast.AI",
   "main": "build/index.js",
   "scripts": {
@@ -12,8 +12,8 @@
     "emulator": "babel-node ./src/core/emulator.js"
   },
   "repository": {
-	"type": "git",
-	"url": "git+https://github.com/RecastAI/botlerplate.git"
+    "type": "git",
+    "url": "git+https://github.com/RecastAI/botlerplate.git"
   },
   "babel": {
     "presets": [
