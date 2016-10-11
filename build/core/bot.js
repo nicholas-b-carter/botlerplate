@@ -319,7 +319,7 @@ var Bot = function () {
           return _this4.getRandom(r);
         }
 
-        var resps = r[language];
+        var resps = r[language] || r.en;
 
         if (Array.isArray(resps)) {
           return _this4.getRandom(resps);

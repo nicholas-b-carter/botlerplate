@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Conversation = exports.Action = exports.Bot = undefined;
+
 var _bot = require('./core/bot');
 
 var _bot2 = _interopRequireDefault(_bot);
@@ -14,8 +19,6 @@ var _conversation2 = _interopRequireDefault(_conversation);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.export = {
-  Bot: _bot2.default,
-  Action: _action2.default,
-  Conversation: _conversation2.default
-};
+exports.Bot = _bot2.default;
+exports.Action = _action2.default;
+exports.Conversation = _conversation2.default;

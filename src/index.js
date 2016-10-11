@@ -1,9 +1,3 @@
-import Bot from './core/bot'
-import Action from './core/action'
-import Conversation from './core/conversation'
-
-module.export = {
-  Bot,
-  Action,
-  Conversation,
-}
+export Bot from './core/bot'
+export Action from './core/action'
+export Conversation from './core/conversation'
