@@ -16,7 +16,7 @@ var Action = function () {
   function Action() {
     _classCallCheck(this, Action);
 
-    this.knowledges = [];
+    this.notions = [];
     this.dependencies = [];
     this.defaultValidator = function (entity) {
       return entity;
@@ -42,7 +42,7 @@ var Action = function () {
         return false;
       }
 
-      if (!Array.isArray(this.dependencies) || !Array.isArray(this.knowledges)) {
+      if (!Array.isArray(this.dependencies) || !Array.isArray(this.notions)) {
         return false;
       }
 
@@ -54,7 +54,7 @@ var Action = function () {
         return false;
       }
 
-      if (!this.knowledges.every(function (c) {
+      if (!this.notions.every(function (c) {
         return _typeof(c.isMissing) === 'object' && Array.isArray(c.entities) && c.entities.every(function (e) {
           return (typeof e === 'undefined' ? 'undefined' : _typeof(e)) === 'object' && typeof e.entity === 'string' && typeof e.alias === 'string';
         });
@@ -79,9 +79,9 @@ var Action = function () {
       }));
     }
   }, {
-    key: 'allKnowledges',
-    value: function allKnowledges() {
-      return _lodash2.default.flatten(this.knowledges.map(function (c) {
+    key: 'allNotions',
+    value: function allNotions() {
+      return _lodash2.default.flatten(this.notions.map(function (c) {
         return c.entities;
       }));
     }
@@ -99,10 +99,10 @@ var Action = function () {
       });
     }
   }, {
-    key: 'knowledgesAreComplete',
-    value: function knowledgesAreComplete(memory) {
-      return this.knowledges.every(function (knowledge) {
-        return knowledge.entities.some(function (e) {
+    key: 'notionsAreComplete',
+    value: function notionsAreComplete(memory) {
+      return this.notions.every(function (notion) {
+        return notion.entities.some(function (e) {
           return memory[e.alias];
         });
       });
@@ -115,7 +115,7 @@ var Action = function () {
   }, {
     key: 'isComplete',
     value: function isComplete(actions, conversation) {
-      return this.dependenciesAreComplete(actions, conversation) && this.knowledgesAreComplete(conversation.memory);
+      return this.dependenciesAreComplete(actions, conversation) && this.notionsAreComplete(conversation.memory);
     }
   }, {
     key: 'isDone',
@@ -125,7 +125,7 @@ var Action = function () {
   }, {
     key: 'getMissingEntities',
     value: function getMissingEntities(memory) {
-      return this.knowledges.filter(function (c) {
+      return this.notions.filter(function (c) {
         return c.entities.some(function (e) {
           return memory[e.alias];
         }) === false;
