@@ -6,7 +6,7 @@ class Greetings extends Action {
   constructor() {
     super()
     this.intent = 'greetings'
-    this.knowledges = [
+    this.notions = [
       {
         isMissing: { en: ['How should I call you?'] },
         entities: [{ entity: 'person', alias: 'name' }],
@@ -19,7 +19,7 @@ class Delivery extends Action {
   constructor() {
     super()
     this.intent = 'delivery'
-    this.knowledges = [
+    this.notions = [
       {
         isMissing: { en: ['Where do you want to be delivered?'] },
         entities: [{ entity: 'datetime', alias: 'delivery-date' }],
@@ -40,7 +40,7 @@ class Order extends Action {
       isMissing: {},
       actions: ['Greetings'],
     }]
-    this.knowledges = [{
+    this.notions = [{
       isMissing: { en: ['What product would you like?'] },
       entities: [{ entity: 'number', alias: 'product' }],
     }]
@@ -68,7 +68,7 @@ test('Action#validate', t => {
   class NoIntent extends Action {
     constructor() {
       super()
-      this.knowledges = []
+      this.notions = []
     }
   }
   let a = new NoIntent()
@@ -78,7 +78,7 @@ test('Action#validate', t => {
     constructor() {
       super()
       this.intent = 'example'
-      this.knowledges = [
+      this.notions = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ entity: 'person', alias: 'name' }] },
       ]
@@ -95,7 +95,7 @@ test('Action#validate', t => {
     constructor() {
       super()
       this.intent = 'example'
-      this.knowledges = [
+      this.notions = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ entity: 'person', alias: 'name' }] },
       ]
@@ -108,11 +108,11 @@ test('Action#validate', t => {
   a = new InvalidDependencies()
   t.false(a.validate())
 
-  class InvalidKnowledges extends Action {
+  class InvalidNotions extends Action {
     constructor() {
       super()
       this.intent = 'example'
-      this.knowledges = [
+      this.notions = [
         { isMissing: { en: ['Some text'], fr: ['Du texte'] },
           entities: [{ alias: 'name' }] },
       ]
@@ -122,7 +122,7 @@ test('Action#validate', t => {
       ]
     }
   }
-  a = new InvalidKnowledges()
+  a = new InvalidNotions()
   t.false(a.validate())
 
   class RequiresItself extends Action {
@@ -135,23 +135,23 @@ test('Action#validate', t => {
   t.false(a.validate())
 })
 
-test('Action#knowledgesAreComplete', t => {
+test('Action#notionsAreComplete', t => {
   const { Greetings: greet, Order: order } = bot.actions
   const conversation = {
     userData: {},
     actionStates: {},
     memory: {},
   }
-  t.false(greet.knowledgesAreComplete(conversation.memory))
-  t.false(order.knowledgesAreComplete(conversation.memory))
+  t.false(greet.notionsAreComplete(conversation.memory))
+  t.false(order.notionsAreComplete(conversation.memory))
 
   conversation.memory.name = { raw: 'Jean Valjean', value: 'Jean Valjean' }
-  t.true(greet.knowledgesAreComplete(conversation.memory))
-  t.false(order.knowledgesAreComplete(conversation.memory))
+  t.true(greet.notionsAreComplete(conversation.memory))
+  t.false(order.notionsAreComplete(conversation.memory))
 
   conversation.memory.product = { raw: 'one', value: 1 }
-  t.true(greet.knowledgesAreComplete(conversation.memory))
-  t.true(order.knowledgesAreComplete(conversation.memory))
+  t.true(greet.notionsAreComplete(conversation.memory))
+  t.true(order.notionsAreComplete(conversation.memory))
 })
 
 test('Action#dependenciesAreComplete', t => {
@@ -221,7 +221,7 @@ test('Action#isComplete', t => {
   t.false(delivery.isComplete(bot.actions, conversation))
   t.false(goodbyes.isComplete(bot.actions, conversation))
 
-  // complete delivery knowledge
+  // complete delivery notion
   conversation.memory['delivery-date'] = {
     raw: 'tomorrow at 9pm',
     formatted: 'Saturday, 01 October 2016 at 09:00:00 PM',
@@ -318,7 +318,7 @@ test('Updators should be able to return a value', async t => {
     constructor() {
       super()
       this.intent = 'command'
-      this.knowledges = [
+      this.notions = [
         {
           entities: [{
             entity: 'location',
@@ -360,7 +360,7 @@ test('Updators should be able to reject or resolve', async t => {
     constructor() {
       super()
       this.intent = 'command'
-      this.knowledges = [
+      this.notions = [
         {
           entities: [{
             entity: 'location',

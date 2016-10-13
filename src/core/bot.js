@@ -254,24 +254,24 @@ class Bot {
   }
 
   // Updates memory with input's entities
-  // Priority: 1) knowledge of the current action
-  //           2) any knowledge that is alone in the bot
+  // Priority: 1) notion of the current action
+  //           2) any notion that is alone in the bot
   updateMemory(entities, conversation, action) {
-    let actionKnowledges = null
+    let actionNotions = null
     if (action) {
-      actionKnowledges = _.flatten(action.knowledges.map(c => c.entities))
+      actionNotions = _.flatten(action.notions.map(c => c.entities))
     }
     return new Promise(resolve => {
       const promises = []
 
       // loop through the entities map
       _.toPairs(entities).forEach(([name, ents]) => {
-        // search for a knowledge of the current action
-        const actionKnowledge =
-          (actionKnowledges && actionKnowledges.find(k => k.entity === name)) || null
+        // search for a notion of the current action
+        const actionNotion =
+          (actionNotions && actionNotions.find(k => k.entity === name)) || null
         ents.forEach(entity => {
-          if (actionKnowledge) {
-            const validator = actionKnowledge.validator || (e => e)
+          if (actionNotion) {
+            const validator = actionNotion.validator || (e => e)
 
             promises.push(((n, ent) => new Promise((resolv, rejec) => {
               Promise.resolve(validator(ent, conversation.memory)).then(res => {
@@ -279,14 +279,14 @@ class Bot {
               }).catch(err => {
                 rejec(err)
               })
-            }))(actionKnowledge.alias, entity))
+            }))(actionNotion.alias, entity))
           } else {
-            const gblKnowledges = _.flatten(_.values(this.actions)
-                                             .map(a => a.allKnowledges()))
+            const gblNotions = _.flatten(_.values(this.actions)
+                                             .map(a => a.allNotions()))
                                    .filter(k => k.entity === name)
 
-            if (gblKnowledges.length === 1) {
-              const validator = gblKnowledges[0].validator || (e => e)
+            if (gblNotions.length === 1) {
+              const validator = gblNotions[0].validator || (e => e)
 
               promises.push(((n, ent) => new Promise((resolv, rejec) => {
                 Promise.resolve(validator(ent, conversation.memory)).then(res => {
@@ -294,7 +294,7 @@ class Bot {
                 }).catch(err => {
                   rejec(err)
                 })
-              }))(gblKnowledges[0].alias, entity))
+              }))(gblNotions[0].alias, entity))
             }
           }
         })
@@ -348,8 +348,8 @@ class Bot {
     let shouldChoose = false
 
     _.forOwn(entities, (values, key) => {
-      const knowledge = action.allKnowledges().find(c => c.entity === key)
-      if (values.length === 1 && knowledge && !conversation.memory[knowledge.alias]) {
+      const notion = action.allNotions().find(c => c.entity === key)
+      if (values.length === 1 && notion && !conversation.memory[notion.alias]) {
         shouldChoose = true
       }
     })
