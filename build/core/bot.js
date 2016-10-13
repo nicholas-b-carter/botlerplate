@@ -335,17 +335,17 @@ var Bot = function () {
     }
 
     // Updates memory with input's entities
-    // Priority: 1) knowledge of the current action
-    //           2) any knowledge that is alone in the bot
+    // Priority: 1) notion of the current action
+    //           2) any notion that is alone in the bot
 
   }, {
     key: 'updateMemory',
     value: function updateMemory(entities, conversation, action) {
       var _this5 = this;
 
-      var actionKnowledges = null;
+      var actionNotions = null;
       if (action) {
-        actionKnowledges = _lodash2.default.flatten(action.knowledges.map(function (c) {
+        actionNotions = _lodash2.default.flatten(action.notions.map(function (c) {
           return c.entities;
         }));
       }
@@ -359,14 +359,14 @@ var Bot = function () {
           var name = _ref2[0];
           var ents = _ref2[1];
 
-          // search for a knowledge of the current action
-          var actionKnowledge = actionKnowledges && actionKnowledges.find(function (k) {
+          // search for a notion of the current action
+          var actionNotion = actionNotions && actionNotions.find(function (k) {
             return k.entity === name;
           }) || null;
           ents.forEach(function (entity) {
-            if (actionKnowledge) {
+            if (actionNotion) {
               (function () {
-                var validator = actionKnowledge.validator || function (e) {
+                var validator = actionNotion.validator || function (e) {
                   return e;
                 };
 
@@ -378,18 +378,18 @@ var Bot = function () {
                       rejec(err);
                     });
                   });
-                }(actionKnowledge.alias, entity));
+                }(actionNotion.alias, entity));
               })();
             } else {
-              var gblKnowledges = _lodash2.default.flatten(_lodash2.default.values(_this5.actions).map(function (a) {
-                return a.allKnowledges();
+              var gblNotions = _lodash2.default.flatten(_lodash2.default.values(_this5.actions).map(function (a) {
+                return a.allNotions();
               })).filter(function (k) {
                 return k.entity === name;
               });
 
-              if (gblKnowledges.length === 1) {
+              if (gblNotions.length === 1) {
                 (function () {
-                  var validator = gblKnowledges[0].validator || function (e) {
+                  var validator = gblNotions[0].validator || function (e) {
                     return e;
                   };
 
@@ -401,7 +401,7 @@ var Bot = function () {
                         rejec(err);
                       });
                     });
-                  }(gblKnowledges[0].alias, entity));
+                  }(gblNotions[0].alias, entity));
                 })();
               }
             }
@@ -473,10 +473,10 @@ var Bot = function () {
       var shouldChoose = false;
 
       _lodash2.default.forOwn(entities, function (values, key) {
-        var knowledge = action.allKnowledges().find(function (c) {
+        var notion = action.allNotions().find(function (c) {
           return c.entity === key;
         });
-        if (values.length === 1 && knowledge && !conversation.memory[knowledge.alias]) {
+        if (values.length === 1 && notion && !conversation.memory[notion.alias]) {
           shouldChoose = true;
         }
       });

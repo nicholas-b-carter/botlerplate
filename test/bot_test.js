@@ -44,7 +44,7 @@ test('Bot#registerAction', t => {
   class Invalid extends Action {
     constructor() {
       super()
-      this.knowledges = [{ entity: 'datetime', alias: 'departure' }]
+      this.notions = [{ entity: 'datetime', alias: 'departure' }]
     }
   }
 
@@ -121,7 +121,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'greetings'
-      this.knowledges = [
+      this.notions = [
         {
           isMissing: { en: ['How should I call you?'] },
           entities: [{ entity: 'person', alias: 'name' }],
@@ -134,7 +134,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'delivery'
-      this.knowledges = [
+      this.notions = [
         {
           isMissing: { en: ['Where do you want to be delivered?'] },
           entities: [{ entity: 'datetime', alias: 'delivery-date' }],
@@ -155,7 +155,7 @@ test('Bot#updateMemory', async t => {
         isMissing: {},
         actions: ['Greetings'],
       }]
-      this.knowledges = [{
+      this.notions = [{
         isMissing: { en: ['What product would you like?'] },
         entities: [{ entity: 'number', alias: 'product' }],
       }, {
@@ -182,7 +182,7 @@ test('Bot#updateMemory', async t => {
   const bot = new Bot()
   bot.registerActions([Greeting, Orderr, Delivery, Goodbyes])
 
-  // It should update the knowledge of the main action
+  // It should update the notion of the main action
   let mainAction = bot.actions.Orderr
   let entities = {
     datetime: [{
@@ -209,7 +209,7 @@ test('Bot#updateMemory', async t => {
   await bot.updateMemory(entities, conversation)
   t.true(typeof conversation.memory.product === 'object')
 
-  // It should not update if there are several knowledges of the same entity
+  // It should not update if there are several notions of the same entity
   mainAction = bot.actions.Greeting
   entities = {
     datetime: [{
@@ -228,7 +228,7 @@ test('Bot#updateMemory', async t => {
   t.true(typeof conversation.memory.product === 'undefined')
   t.true(typeof conversation.memory['delivery-date'] === 'undefined')
 
-  // It should update several knowledges
+  // It should update several notions
   mainAction = bot.actions.Orderr
   entities = {
     person: [{
@@ -269,7 +269,7 @@ test('Bot#updateMemory', async t => {
     constructor() {
       super()
       this.intent = 'bad'
-      this.knowledges = [
+      this.notions = [
         {
           isMissing: {},
           entities: [{
