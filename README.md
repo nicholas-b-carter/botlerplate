@@ -32,6 +32,6 @@ To have a running example of botlerplate, fork [this bot](https://recast.ai/ftri
 ```bash
 git clone https://github.com/RecastAI/botlerplate.git mybot
 cd mybot
-cp -r example/actions src/actions
+cp example/actions/* src/actions
 TOKEN=YOUR_RECAST_TOKEN npm run emulator -- --db
 ```
