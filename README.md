@@ -14,12 +14,6 @@ Thie module allows you to start your project with strong bases.
 git clone https://github.com/RecastAI/botlerplate
 ```
 
-### Using npm
-
-```bash
-npm install --save botlerplate
-```
-
 ### Using the generator
 
 ```bash
