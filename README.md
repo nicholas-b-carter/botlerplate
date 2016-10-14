@@ -1,6 +1,6 @@
 # Recast.Ai Botlerplate
 
-Botlerplatee is a chatbot framework built to work with Recast.Ai's API.
+Botlerplate is a chatbot framework built to work with Recast.Ai's API.
 
 ## Synopsis
 
