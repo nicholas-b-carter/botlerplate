@@ -1,6 +1,6 @@
 # Recast.Ai Botlerplate
 
-Botlerplatee is a chatbot framework built to work with Recast.Ai's API.
+Botlerplate is a chatbot framework built to work with Recast.Ai's API.
 
 ## Synopsis
 
@@ -12,12 +12,6 @@ Thie module allows you to start your project with strong bases.
 
 ```bash
 git clone https://github.com/RecastAI/botlerplate
-```
-
-### Using npm
-
-```bash
-npm install --save botlerplate
 ```
 
 ### Using the generator
@@ -38,6 +32,6 @@ To have a running example of botlerplate, fork [this bot](https://recast.ai/ftri
 ```bash
 git clone https://github.com/RecastAI/botlerplate.git mybot
 cd mybot
-cp -r example/actions src/actions
+cp example/actions/* src/actions
 TOKEN=YOUR_RECAST_TOKEN npm run emulator -- --db
 ```

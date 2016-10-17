@@ -208,7 +208,7 @@ class Bot {
                     })
                   }).catch(nextResp => {
                     this.saveConversation(conversation, () => {
-                      replies.push(nexResp)
+                      replies.push(nextResp)
                       const resps = this.pickReplies(replies, results.language)
                       return resolve(resps.map(r => this.evaluateReply(r, conversation.memory)))
                     })
