@@ -3,10 +3,10 @@ import _ from 'lodash'
 import mongoose from 'mongoose'
 import requireAll from 'require-all'
 
-import Bot from './bot'
-import config from '../../config'
+import { Bot } from 'bot-dialog'
+import config from '../config'
 
-const actions = requireAll(`${__dirname}/../actions`)
+const actions = requireAll(`${__dirname}/actions`)
 
 const recastToken = ''
 
@@ -22,6 +22,9 @@ const bot = new Bot({
   fallbackReplies: { en: ['Aye donte endeurstende'] },
 })
 
+console.log('++++++++++++++++++++')
+console.log(_.values(actions))
+console.log('++++++++++++++++++++')
 bot.registerActions(_.values(actions))
 
 if (process.argv.indexOf('--db') !== -1) {
