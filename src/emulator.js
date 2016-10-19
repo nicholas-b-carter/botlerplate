@@ -22,9 +22,6 @@ const bot = new Bot({
   fallbackReplies: { en: ['Aye donte endeurstende'] },
 })
 
-console.log('++++++++++++++++++++')
-console.log(_.values(actions))
-console.log('++++++++++++++++++++')
 bot.registerActions(_.values(actions))
 
 if (process.argv.indexOf('--db') !== -1) {
