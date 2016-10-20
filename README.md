@@ -4,7 +4,7 @@ Botlerplate is a chatbot framework built to work with Recast.Ai's API.
 
 ## Synopsis
 
-Thie boilerplate allows you to start your project with strong bases.
+The boilerplate allows you to start your project with strong bases.
 
 ## Installation
 
@@ -12,6 +12,7 @@ Thie boilerplate allows you to start your project with strong bases.
 
 ```bash
 git clone https://github.com/RecastAI/botlerplate
+npm install
 ```
 
 ### Using the generator
