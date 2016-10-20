@@ -12,6 +12,7 @@ The boilerplate allows you to start your project with strong bases.
 
 ```bash
 git clone https://github.com/RecastAI/botlerplate
+cd botlerplate
 npm install
 ```
 
