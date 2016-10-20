@@ -1,11 +1,10 @@
-
-import Action from '../core/action'
-
+import { Action } from 'bot-dialog-manager'
 
 class Greetings extends Action {
   constructor() {
     super()
     this.intent = 'greetings'
+    this.next = 'Booking'
   }
 
   reply() {

@@ -1,6 +1,4 @@
-
-import Action from '../core/action'
-
+import { Action } from 'bot-dialog-manager'
 
 class Information extends Action {
   constructor() {

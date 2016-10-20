@@ -1,6 +1,4 @@
-
-import Action from '../core/action'
-
+import { Action } from 'bot-dialog-manager'
 
 class No extends Action {
   constructor() {
@@ -10,7 +8,7 @@ class No extends Action {
       {
         actions: ['Information'],
         isMissing: { en: ['I need you email address and your name before booking the meeting-room.'] },
-      }
+      },
     ]
     this.endConversation = true
   }

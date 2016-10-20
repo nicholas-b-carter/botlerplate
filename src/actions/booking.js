@@ -1,6 +1,4 @@
-
-import Action from '../core/action'
-
+import { Action } from 'bot-dialog-manager'
 
 class Booking extends Action {
   constructor() {
@@ -10,15 +8,10 @@ class Booking extends Action {
     this.notions = [
       {
         entities: [{ entity: 'datetime', alias: 'date' }],
-        isMissing: { en: ['Can you give me the date you like to book the meeting room {{room-number}}?'] },
+        isMissing: { en: ['Can you give me the date you like to book the meeting room {{room-number}}?']},
       },
-      {
-        entities: [{ entity: 'number', alias: 'room-number' }],
-        isMissing: { en: ['I need the number of the meeting room you\'d like to book.', 'What is the number of the room you want?'] },
-      },
-      {
-        entities: [{ entity: 'duration', alias: 'duration' }],
-        isMissing: ['How long will you need the room?'],
+      { entities: [{ entity: 'number', alias: 'room-number' }],
+        isMissing: { en: ['I need the number of the meeting room you\'d like to book.', 'What is the number of the room you want?'] }
       },
     ]
   }

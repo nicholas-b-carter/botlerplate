@@ -1,16 +1,14 @@
-
-import Action from '../core/action'
-
+import { Action } from 'bot-dialog-manager'
 
 class Yes extends Action {
   constructor() {
     super()
-    this.intent = 'agree'
+    this.intent = 'yes'
     this.dependencies = [
       {
-        actions: ['Booking'],
-        isMissing: { en: ['Please tell me what do you need.'] },
-      }
+        actions: ['Information'],
+        isMissing: { en: ['I need you email address and your name before booking the meeting-room.'] },
+      },
     ]
     this.endConversation = true
   }
