@@ -1,6 +1,6 @@
 {
   "name": "botlerplate",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Bot framework by Recast.AI",
   "scripts": {
     "build": "babel src -d build",
