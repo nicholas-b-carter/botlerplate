@@ -37,3 +37,10 @@ npm install
 cp example/actions/* src/actions
 TOKEN=YOUR_RECAST_TOKEN npm run emulator -- --db
 ```
+
+## Author
+
+François Triquet - Recast.AI francois.triquet@recast.ai
+
+You can follow us on Twitter at @recastai for updates and releases.
+
