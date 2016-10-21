@@ -3,7 +3,7 @@ import _ from 'lodash'
 import mongoose from 'mongoose'
 import requireAll from 'require-all'
 
-import { Bot } from 'bot-dialog'
+import { Bot } from 'bot-dialog-manager'
 import config from '../config'
 
 const actions = requireAll(`${__dirname}/actions`)
