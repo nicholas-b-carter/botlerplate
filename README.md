@@ -12,6 +12,7 @@ The boilerplate allows you to start your project with strong bases.
 
 ```bash
 git clone https://github.com/RecastAI/botlerplate
+cd botlerplate
 npm install
 ```
 
@@ -28,13 +29,12 @@ For detailed information about how the framework works, see the [wiki](https://g
 
 ## Example
 
-To have a running example of botlerplate, fork [this bot](https://recast.ai/ftriquet/meeting-room-bot) on Recast and follow these commands.
+To have a running example of botlerplate, you just need to use the first you had when you created your account on Recast, your-slack-bot.
 
 ```bash
 git clone https://github.com/RecastAI/botlerplate.git mybot
 cd mybot
 npm install
-cp example/actions/* src/actions
 TOKEN=YOUR_RECAST_TOKEN npm run emulator -- --db
 ```
 
