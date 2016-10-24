@@ -20,4 +20,4 @@ const myBot = new Bot({
 
 myBot.registerActions(_.values(actions))
 
-module.export = myBot
+module.exports = myBot

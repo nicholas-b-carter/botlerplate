@@ -76,7 +76,6 @@
   },
   "dependencies": {
     "axios": "^0.14.0",
-    "bot-dialog": "1.0.0",
     "bot-dialog-manager": "^1.1.2",
     "lodash": "^4.16.2",
     "mongoose": "^4.6.1",

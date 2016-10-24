@@ -4,5 +4,7 @@ module.exports = {
     hostname: '',
     port: '',
     name: '',
+    username: '',
+    password: '',
   },
 }
