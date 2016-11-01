@@ -5,7 +5,11 @@
 
 ## Synopsis
 
-The Botlerplate allows you to start your project with strong bases.
+The Botlerplate allows you to start your bot with strong bases. You need to have a Recast.AI account and a bot with intents and entities configured on the [platform](https://recast.ai).
+
+If it's not your case, we suggest you to start from [here](https://youtu.be/Lg5rRLlYbK8?list=PLPQwLOaGjgF9hliUgznzcvmzZXUUV4W-g).
+
+If you already know our Bot Builder tool on the platform, you will find the same logic in this framework.
 
 ## Installation
 
